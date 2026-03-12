@@ -14,26 +14,25 @@ A minimalist web application to track the number of floors you've climbed. Tap t
 
 ## Future Roadmap 🚀
 
-### Phase 1: Tech Stack & Foundation
-- [x] **React Migration:** Built on a robust React + Vite foundation (Completed ahead of schedule!).
+### Phase 1: Tech Stack & Foundation (Completed ✅)
+- [x] **React Migration:** Built on a robust React + Vite foundation.
 - [x] **Tailwind CSS:** Modern, responsive styling system.
-- [ ] **PWA (Progressive Web App):** Allow users to install the app on their home screen for offline use and native-like feel.
+- [x] **Data Model:** Core application state configured and persisted via `localStorage`.
 
-### Phase 2: Data & Analytics
-- [ ] **Daily History:** Track floors per day and view historical data (similar to the HTML prototype).
-- [ ] **Cloud Sync:** Integrate Firebase or Supabase to sync data across multiple devices.
-- [ ] **Visualizations:** Add charts (using Recharts or D3) to show weekly and monthly progress.
+### Phase 1.5: Persistence & Gamification (In Progress 👷)
+- [ ] **PWA (Progressive Web App):** Configure manifesting and service workers to make the app installable with an offline-first feel.
+- [ ] **Frictionless Anonymous Login:** Automatically generate a UUID via Hash Routing (`/#/[uuid]`) for secure, shareable bookmarking.
+- [ ] **Cloud Sync:** Integrate an offline-first database (like Firebase or Supabase) to sync user records via their UUID.
+- [ ] **Dynamic Challenges:** Allow users to choose different vertical targets (e.g., Eiffel Tower, Burj Khalifa) instead of just Everest.
+- [ ] **Stats Context:** Add completion percentages (`%`) and an info modal (`ℹ️`) filled with quirky comparison metrics.
+- [ ] **Feedback Loop:** Simple `mailto:` or contact form integration.
 
-### Phase 3: Gamification & Social
-- [ ] **Achievements:** Unlock badges for milestones (e.g., "Empire State Building", "Mount Everest").
-- [ ] **Streaks:** Track consecutive days of climbing to build a habit.
-- [ ] **Leaderboards:** Compete with friends or globally.
+### Phase 2: Analytics & Insights
+- [ ] **Unified Dashboard:** Move beyond simple history and implement a dedicated dashboard.
+- [ ] **Visualizations:** Introduce aesthetic charts (e.g., using Recharts) for weekly and monthly trends.
+- [ ] **Journey Maps:** Develop stylized maps to visually represent the user's progress up their current landmark target.
 
-### Phase X: 
-- graphs
-- login
-- cloud sync
-- water
-- food
-- calories
-- weight
+### Phase 3: The "Total Health" Ecosystem
+- [ ] **Modular Tracking:** Allow users to toggle tracking modules for water, food, calories, and weight alongside their floors climbed.
+- [ ] **Contextual Advice:** Generate smart suggestions (e.g., "You climbed X floors, drink water!")
+- [ ] **Social Connection:** Implement friend-only micro-leaderboards and achievement sharing (e.g., weekly summary cards).
