@@ -1,8 +1,8 @@
-# ⬆️ MAHAAAAAAAAAAAAA LOG 🪵📜 Floor Tracker
+# 🛗 MAHA LOG — Floor Tracker
 
-**v0.0.3**
+**v0.0.3** · [Live App](https://nickpricks.github.io/MAHAAAAAAAAAAAAA-LOG-Floor-Tracker/)
 
-A minimalist web application to track the number of floors you've climbed.
+A minimalist web application to track the number of floors you've climbed. Tap the elevator buttons. Watch the number grow.
 
 ## Current Features
 - **One-Tap Tracking:** Instantly log a floor with a single tap.
