@@ -19,5 +19,5 @@
   - Add an info tooltip ("i" icon) for more stats.
   - Add quirky/funny metrics (e.g., "You've climbed the equivalent of 14 giraffes stacked").
 - [ ] 5. **Randomized Challenges**: Allow users to select different targets (e.g., Eiffel Tower, Burj Khalifa, Empire State) instead of just Everest.
-- [ ] 6. **Feedback/Contact**: Add a simple feedback button (mailto or form link) in the Help tab or footer.
+- [ ] 6. **Feedback/Contact**: Add a simple feedback button (mailto or form link) in the Help tab or footer. Feedback email comes from config. or env or constants
 - [ ] 7. **Dashboard**: Build a simple unified dashboard view for richer analytics.
