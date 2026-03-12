@@ -1,3 +1,5 @@
+import { motion, useAnimationControls } from 'motion/react';
+import { ChevronUp, ChevronDown } from 'lucide-react';
 import { DailyRecord } from '../types';
 
 type Props = {
@@ -7,6 +9,31 @@ type Props = {
 };
 
 export default function TrackerTab({ todayTotal, handleTap, sortedRecords }: Props) {
+  const counterControls = useAnimationControls();
+  const upControls = useAnimationControls();
+  const downControls = useAnimationControls();
+
+  // Scale font from 4rem (0 floors) to 9rem (25+ floors)
+  const MIN_REM = 4;
+  const MAX_REM = 9;
+  const CAP = 25;
+  const fontSize = `${MIN_REM + (MAX_REM - MIN_REM) * (Math.min(todayTotal, CAP) / CAP)}rem`;
+
+  const onTap = (type: 'up' | 'down') => {
+    navigator.vibrate?.(20);
+    counterControls.start({ scale: [1, 1.15, 1], transition: { duration: 0.25 } });
+    const btnControls = type === 'up' ? upControls : downControls;
+    btnControls.start({
+      boxShadow: [
+        '0 0 0 2px rgba(250,204,21,0), 0 0 0px rgba(250,204,21,0)',
+        '0 0 0 3px rgba(250,204,21,0.9), 0 0 20px rgba(250,204,21,0.5)',
+        '0 0 0 2px rgba(250,204,21,0), 0 0 0px rgba(250,204,21,0)',
+      ],
+      transition: { duration: 0.6 },
+    });
+    handleTap(type);
+  };
+
   const getDayName = (dateStr: string) => {
     const [y, m, d] = dateStr.split('-');
     const date = new Date(parseInt(y, 10), parseInt(m, 10) - 1, parseInt(d, 10));
@@ -21,31 +48,37 @@ export default function TrackerTab({ todayTotal, handleTap, sortedRecords }: Pro
   return (
     <>
       {/* Main Tracker */}
-      <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-zinc-200 flex flex-col items-center gap-2 w-full max-w-sm mb-8">
-        <div className="text-5xl mb-2">🏢</div>
-        <div className="text-sm font-bold tracking-[0.2em] text-zinc-400 uppercase">
+      <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-zinc-200 flex flex-col items-center w-full max-w-sm mb-8">
+        <div className="text-5xl mb-4">🏢</div>
+        <div className="text-sm font-bold tracking-[0.2em] text-zinc-400 uppercase mb-2">
           Today's Floors
         </div>
-        <div className="text-7xl font-black text-zinc-800 tabular-nums my-4">
-          {todayTotal}
-        </div>
-        
-        <div className="flex gap-4 w-full mt-4">
-          <button
-            onClick={() => handleTap('up')}
-            className="flex-1 py-4 bg-blue-600 hover:bg-blue-700 active:scale-95 transition-all text-white rounded-2xl text-lg font-bold shadow-md flex flex-col items-center justify-center gap-1"
+
+        <motion.button
+          onClick={() => onTap('up')}
+          animate={upControls}
+          className="w-20 h-20 bg-zinc-800 hover:bg-zinc-700 active:scale-90 transition-transform text-zinc-300 rounded-full border-2 border-zinc-600 flex items-center justify-center"
+        >
+          <ChevronUp size={28} strokeWidth={2.5} />
+        </motion.button>
+
+        <div className="h-40 flex items-center justify-center my-2">
+          <motion.div
+            animate={counterControls}
+            style={{ fontSize }}
+            className="leading-none font-bold text-zinc-800 tabular-nums transition-all duration-300"
           >
-            <span className="text-2xl">⬆️</span>
-            <span>UP</span>
-          </button>
-          <button
-            onClick={() => handleTap('down')}
-            className="flex-1 py-4 bg-indigo-500 hover:bg-indigo-600 active:scale-95 transition-all text-white rounded-2xl text-lg font-bold shadow-md flex flex-col items-center justify-center gap-1"
-          >
-            <span className="text-2xl">⬇️</span>
-            <span>DOWN</span>
-          </button>
+            {todayTotal}
+          </motion.div>
         </div>
+
+        <motion.button
+          onClick={() => onTap('down')}
+          animate={downControls}
+          className="w-20 h-20 bg-zinc-800 hover:bg-zinc-700 active:scale-90 transition-transform text-zinc-300 rounded-full border-2 border-zinc-600 flex items-center justify-center"
+        >
+          <ChevronDown size={28} strokeWidth={2.5} />
+        </motion.button>
       </div>
 
       {/* History List */}
