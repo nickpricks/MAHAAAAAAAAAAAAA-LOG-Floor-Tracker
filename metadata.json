@@ -1,0 +1,5 @@
+{
+  "name": "Floor Tracker",
+  "description": "A minimalist app to track floors climbed using local storage.",
+  "requestFramePermissions": []
+}

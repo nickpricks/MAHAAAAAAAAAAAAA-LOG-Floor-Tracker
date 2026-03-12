@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .markdown-body h1 { @apply text-3xl font-black mb-6 text-zinc-900; }
+  .markdown-body h2 { @apply text-xl font-bold mt-8 mb-4 text-zinc-800; }
+  .markdown-body h3 { @apply text-lg font-bold mt-6 mb-3 text-zinc-800; }
+  .markdown-body p { @apply mb-4 text-zinc-600 leading-relaxed; }
+  .markdown-body ul { @apply list-disc pl-5 mb-6 text-zinc-600 space-y-2; }
+  .markdown-body li { @apply pl-1; }
+  .markdown-body hr { @apply my-8 border-zinc-200; }
+  .markdown-body strong { @apply font-bold text-zinc-900; }
+}
