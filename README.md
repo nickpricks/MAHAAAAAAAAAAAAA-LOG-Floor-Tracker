@@ -1,6 +1,6 @@
 # ⬆️ MAHAAAAAAAAAAAAA LOG 🪵📜 Floor Tracker
 
-**v0.0.1**
+**v0.0.2**
 
 A minimalist web application to track the number of floors you've climbed.
 
