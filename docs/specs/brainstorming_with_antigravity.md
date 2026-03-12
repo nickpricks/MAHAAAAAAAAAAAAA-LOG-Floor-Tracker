@@ -46,7 +46,8 @@ Make the app installable and capable of offline use.
 
 ### 2. Anonymous Login & Frictionless Onboarding (Risk Mitigation)
 Generate a unique identifier so a user's data can persist across devices, while actively mitigating the risk of them losing data if they clear their cache.
-*   **Routing Strategy:** Use Hash Routing (`/#/[uuid]`). GitHub Pages natively redirects 404s, but Hash routing is 100% safe for single-page apps on static hosts. This makes the URL a shareable "login link."
+*   **Routing Strategy (Phase 1.5):** Use Hash Routing (`/#/[uuid]`). GitHub Pages natively redirects 404s, but Hash routing is 100% safe for single-page apps on static hosts. This makes the URL a shareable "login link."
+*   **Routing Strategy (Phase 2):** Migrate from Hash Routing back to Standard Routing (`/[uuid]`). Use `vite-plugin-pwa` configuration or a custom 404 script to handle the SPA fallback on GitHub Pages to provide cleaner URLs without the `#`.
 *   **Firebase Anonymous Auth:** Use Firebase's native `signInAnonymously()` under the hood. This attaches their local UUID to an actual Firebase cloud account silently, securely reserving their data bucket.
 *   **The Onboarding Tour & Warning UI (Crucial):**
     *   Show a clean, minimal "Onboarding Popup" on their very first visit explaining that their custom URL *is* their account.

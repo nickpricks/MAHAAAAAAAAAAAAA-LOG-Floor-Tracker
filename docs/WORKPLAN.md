@@ -22,6 +22,7 @@
 - [x] 6. **Feedback/Contact**: Add a simple feedback button (mailto or form link) in the Help tab or footer. Feedback email comes from config. or env or constants
 
 ### Phase 2 Preparation & Refactoring
+- [ ] 0. **Routing Migration**: Remove Hash Routing (`/#/uuid`) and revert back to Standard Routing (`/uuid`), setting up a 404 redirect script for GitHub Pages compatibility.
 - [ ] 1. Move DEV_MODE_QUERY_PARAM in App.tsx to utils
 - [ ] 2. Move helper functions in App.tsx to utils
 - [ ] 3. Move helper func in StatsTab.tsx and TrackerTabs to utils
