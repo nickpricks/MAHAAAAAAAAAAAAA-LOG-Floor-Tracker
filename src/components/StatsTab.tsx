@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { DailyRecord } from '../types';
 import { METERS_PER_FLOOR, CHALLENGES } from '../constants';
+import { getLast7DaysKeys } from '../utils/date';
 import { Info, X } from 'lucide-react';
 
 type Props = {
@@ -13,13 +14,7 @@ export default function StatsTab({ records, todayKey }: Props) {
   const [showInfo, setShowInfo] = useState(false);
 
   const currentMonthPrefix = todayKey.substring(0, 7); // YYYY-MM
-  
-  // Calculate dates for the last 7 days
-  const last7Days = Array.from({length: 7}, (_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  });
+  const last7Days = getLast7DaysKeys();
 
   let todayFloors = 0;
   let weekFloors = 0;

@@ -1,6 +1,8 @@
 import { motion, useAnimationControls } from 'motion/react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { DailyRecord } from '../types';
+import { getDayName, getFormattedDate } from '../utils/date';
+import { TRACKER_UI } from '../constants';
 
 type Props = {
   todayTotal: number;
@@ -13,11 +15,9 @@ export default function TrackerTab({ todayTotal, handleTap, sortedRecords }: Pro
   const upControls = useAnimationControls();
   const downControls = useAnimationControls();
 
-  // Scale font from 4rem (0 floors) to 9rem (25+ floors)
-  const MIN_REM = 4;
-  const MAX_REM = 9;
-  const CAP = 25;
-  const fontSize = `${MIN_REM + (MAX_REM - MIN_REM) * (Math.min(todayTotal, CAP) / CAP)}rem`;
+  // Scale font from MIN_FONT_REM (0 floors) to MAX_FONT_REM (MAX_SCALE_FLOORS+ floors)
+  const { MIN_FONT_REM, MAX_FONT_REM, MAX_SCALE_FLOORS } = TRACKER_UI;
+  const fontSize = `${MIN_FONT_REM + (MAX_FONT_REM - MIN_FONT_REM) * (Math.min(todayTotal, MAX_SCALE_FLOORS) / MAX_SCALE_FLOORS)}rem`;
 
   const onTap = (type: 'up' | 'down') => {
     navigator.vibrate?.(20);
@@ -32,17 +32,6 @@ export default function TrackerTab({ todayTotal, handleTap, sortedRecords }: Pro
       transition: { duration: 0.6 },
     });
     handleTap(type);
-  };
-
-  const getDayName = (dateStr: string) => {
-    const [y, m, d] = dateStr.split('-');
-    const date = new Date(parseInt(y, 10), parseInt(m, 10) - 1, parseInt(d, 10));
-    return date.toLocaleDateString('en-US', { weekday: 'long' });
-  };
-
-  const getFormattedDate = (dateStr: string) => {
-    const [y, m, d] = dateStr.split('-');
-    return `${d}/${m}/${y}`;
   };
 
   return (

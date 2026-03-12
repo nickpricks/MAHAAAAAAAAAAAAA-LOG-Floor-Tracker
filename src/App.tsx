@@ -3,6 +3,8 @@ import { DEV_MODE_QUERY_PARAM } from './constants';
 import { DailyRecord } from './types';
 import { loadRecords, saveRecords } from './utils/storage';
 import { initializeFirebaseSession, syncRecordToCloud, syncAllLocalToCloud } from './utils/firebase';
+import { isDevModeEnabled, generateDummyData, confirmResetData } from './utils/dev';
+import { getTodayKey } from './utils/date';
 import TrackerTab from './components/TrackerTab';
 import StatsTab from './components/StatsTab';
 import HelpTab from './components/HelpTab';
@@ -16,37 +18,40 @@ export default function App() {
   const [showWarning, setShowWarning] = useState<boolean>(false);
 
   useEffect(() => {
-    // 1. Dev Mode Check (Needs to parse from Hash now that we use Hash Routing)
-    // Extracts anything after the '?' in the hash string (e.g. #/uuid?devMode=true)
-    const hashString = window.location.hash;
-    const queryStringData = hashString.includes('?') ? hashString.split('?')[1] : '';
-    const params = new URLSearchParams(queryStringData);
-    if (params.get(DEV_MODE_QUERY_PARAM) === 'true') {
+    // 1. Dev Mode Check
+    if (isDevModeEnabled()) {
       setIsDevUrl(true);
     }
 
-    // 2. Anonymous UUID Routing Logic
-    const currentHash = window.location.hash.replace('#/', '');
-    const storedId = localStorage.getItem('maha_user_id');
+    // 2. Standard UUID Routing Logic
+    const baseUrl = import.meta.env.BASE_URL; // Handles '/' in dev or '/RepoName/' in prod
+    let currentPath = window.location.pathname;
     
-    let activeId = currentHash;
+    // Srtip out the base path to extract just the UUID
+    if (currentPath.startsWith(baseUrl)) {
+      currentPath = currentPath.substring(baseUrl.length);
+    }
+    currentPath = currentPath.replace(/^\/+|\/+$/g, ''); // cleanly trim slashes
 
-    if (currentHash && currentHash.length > 10) {
-      // User came via a valid bookmark/shared link
-      setUserId(currentHash);
-      if (storedId !== currentHash) {
-        localStorage.setItem('maha_user_id', currentHash);
+    const storedId = localStorage.getItem('maha_user_id');
+    let activeId = currentPath;
+
+    if (currentPath && currentPath.length > 10) {
+      // User came via a valid URL /uuid
+      setUserId(currentPath);
+      if (storedId !== currentPath) {
+        localStorage.setItem('maha_user_id', currentPath);
       }
     } else if (storedId) {
-      // User has been here before but visited root URL, redirect them to their hash
-      window.location.hash = `/${storedId}`;
+      // User has been here before but visited root URL, silently rewrite their URL correctly
+      window.history.replaceState(null, '', `${baseUrl}${storedId}`);
       setUserId(storedId);
       activeId = storedId;
     } else {
       // Brand new user
       const newId = crypto.randomUUID();
       localStorage.setItem('maha_user_id', newId);
-      window.location.hash = `/${newId}`;
+      window.history.replaceState(null, '', `${baseUrl}${newId}`);
       setUserId(newId);
       setShowWarning(true); // Show the risk mitigation warning
       activeId = newId;
@@ -77,33 +82,13 @@ export default function App() {
   }, [records]);
 
   const injectDummyData = () => {
-    const dummy: Record<string, DailyRecord> = {};
-    const today = new Date();
-    for (let i = 0; i < 30; i++) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-      const up = Math.floor(Math.random() * 20) + 5; // 5 to 24
-      const down = Math.floor(Math.random() * 10); // 0 to 9
-      dummy[dateStr] = {
-        dateStr,
-        up,
-        down,
-        total: up * 1 + down * 0.5
-      };
-    }
-    setRecords(dummy);
+    setRecords(generateDummyData());
   };
 
   const resetData = () => {
-    if (window.confirm("Are you sure you want to delete all data on this device?")) {
+    if (confirmResetData()) {
       setRecords({});
     }
-  };
-
-  const getTodayKey = () => {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   };
 
   const handleTap = (type: 'up' | 'down') => {

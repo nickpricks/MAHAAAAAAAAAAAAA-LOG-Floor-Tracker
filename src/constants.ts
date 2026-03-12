@@ -9,3 +9,9 @@ export const CHALLENGES = [
   { id: 'everest', name: 'Mount Everest', meters: 8848, emoji: '⛰️' },
   { id: 'mariana', name: 'Mariana Trench Depth', meters: 10984, emoji: '🌊' },
 ];
+
+export const TRACKER_UI = {
+  MIN_FONT_REM: 4,
+  MAX_FONT_REM: 9,
+  MAX_SCALE_FLOORS: 25,
+};
