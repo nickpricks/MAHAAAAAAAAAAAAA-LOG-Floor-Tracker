@@ -4,13 +4,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-- **Dev server:** `npm run dev` (runs on port 3000, accessible on all interfaces)
-- **Build:** `npm run build`
-- **Type check:** `npm run lint` (runs `tsc --noEmit`)
-- **Clean:** `npm run clean` (removes dist/)
-- **Preview production build:** `npm run preview`
+- **Install:** `bun install`
+- **Dev server:** `bun run dev` (runs on port 3000, accessible on all interfaces)
+- **Build:** `bun run build`
+- **Type check:** `bun run lint` (runs `tsc --noEmit`)
+- **Verify build:** `bun run verify` (builds and checks dist/index.html exists)
+- **Clean:** `bun run clean` (removes dist/)
+- **Preview production build:** `bun run preview`
 
-No test framework is configured.
+No test framework is configured. Package manager is bun (not npm).
+
+## Deployment
+
+GitHub Pages via GitHub Actions (`.github/workflows/deploy.yml`). Auto-deploys on push to `main`, also supports manual `workflow_dispatch`. Vite `base` is set to `/MAHAAAAAAAAAAAAA-LOG-Floor-Tracker/` for correct asset paths on gh-pages. First-time setup: repo Settings → Pages → Source → "GitHub Actions".
 
 ## Architecture
 
