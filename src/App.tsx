@@ -16,8 +16,11 @@ export default function App() {
   const [showWarning, setShowWarning] = useState<boolean>(false);
 
   useEffect(() => {
-    // 1. Dev Mode Check
-    const params = new URLSearchParams(window.location.search);
+    // 1. Dev Mode Check (Needs to parse from Hash now that we use Hash Routing)
+    // Extracts anything after the '?' in the hash string (e.g. #/uuid?devMode=true)
+    const hashString = window.location.hash;
+    const queryStringData = hashString.includes('?') ? hashString.split('?')[1] : '';
+    const params = new URLSearchParams(queryStringData);
     if (params.get(DEV_MODE_QUERY_PARAM) === 'true') {
       setIsDevUrl(true);
     }
