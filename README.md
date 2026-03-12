@@ -16,7 +16,6 @@ A minimalist web application to track the number of floors you've climbed. Tap t
 
 | Phase | Status | Key Features |
 | :--- | :--- | :--- |
-| **Phase 1: Foundation** | ✅ Completed | React + Vite, Tailwind CSS, LocalStorage Data Model |
-| **Phase 1.5: Persistence & Gamification** | 👷 In Progress | PWA, Anonymous UUID Routing, Firebase Cloud Sync, Dynamic Challenges & Fun Facts |
+| **Phase 1: Foundation & Gamification** | ✅ Completed | React + Vite, Tailwind CSS, LocalStorage, PWA, Anonymous UUID Routing, Firebase Cloud Sync, Dynamic Challenges & Fun Facts |
 | **Phase 2: Analytics & Insights** | 🗓️ Planned | Unified Dashboard Overview, Data Visualizations (Recharts), Visual Journey Maps |
 | **Phase 3: The "Total Health" Ecosystem** | 🗓️ Planned | Modular Tracking (Water/Calories), Contextual Advice, Social Micro-Leaderboards |
