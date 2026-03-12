@@ -4,11 +4,13 @@ import { DailyRecord } from '../types';
 import { getDayName, getFormattedDate } from '../utils/date';
 import { TRACKER_UI } from '../constants';
 
+
 type Props = {
   todayTotal: number;
   handleTap: (type: 'up' | 'down') => void;
   sortedRecords: DailyRecord[];
 };
+
 
 export default function TrackerTab({ todayTotal, handleTap, sortedRecords }: Props) {
   const counterControls = useAnimationControls();
@@ -74,9 +76,12 @@ export default function TrackerTab({ todayTotal, handleTap, sortedRecords }: Pro
       <div className="w-full max-w-sm">
         <h2 className="text-lg font-bold text-zinc-700 mb-4 px-2">History</h2>
         <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
-          {sortedRecords.length === 0 ? (
+          {
+            sortedRecords.length === 0 &&
             <div className="p-6 text-center text-zinc-400 text-sm">No floors tracked yet.</div>
-          ) : (
+          }
+          {
+            sortedRecords.length !== 0 &&
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-zinc-50 border-b border-zinc-200 text-xs uppercase tracking-wider text-zinc-500">
@@ -95,7 +100,7 @@ export default function TrackerTab({ todayTotal, handleTap, sortedRecords }: Pro
                 ))}
               </tbody>
             </table>
-          )}
+          }
         </div>
       </div>
     </>

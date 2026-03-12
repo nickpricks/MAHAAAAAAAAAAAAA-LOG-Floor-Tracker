@@ -71,6 +71,11 @@ To support the Phase 1.5 backend, the following manual steps were executed in th
 *   Updated `App.tsx` to call `signInAnonymously()` on initial load, mapping the URL UUID to the cloud session.
 *   Implemented a 2-way sync: It first checks Firestore for existing data bridging to the UUID. Whenever a user taps, it updates local state and does a fire-and-forget `setDoc` merge to Firestore.
 
+**Security Review: The Public `apiKey`**
+In the Firebase Client SDKs (Web, iOS, Android), configuration variables like the `apiKey` **are not actually secrets**. They act as routing identifiers linking the frontend to the backend instance. The real security is exclusively handled by **Firestore Security Rules**. Since this app uses Anonymous Authentication, the security rules in the Firebase Console must be configured so an anonymous user can only read/write to their specific UUID document. 
+
+*Recommendation for later phases:* Even though they aren't secrets, it's best practice to eventually move the `firebaseConfig` variables into a local `.env` file (e.g., `VITE_FIREBASE_API_KEY`) to prevent GitHub's automated secret scanners from flagging the repository.
+
 ### 4. StatsTab Enhancements & Gamification
 Make the stats page more fun and informative.
 *   **Enhancements:** 
