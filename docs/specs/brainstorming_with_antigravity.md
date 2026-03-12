@@ -77,5 +77,11 @@ Make the stats page more fun and informative.
     *   Add an information icon (`ℹ️`) that reveals extra fun metrics (e.g., "Equivalent to X stacked giraffes").
 *   **Challenges:** Introduce a dropdown to change the target from Mount Everest (8,848m) to other structures (Eiffel Tower, Burj Khalifa, etc.).
 
+**Implementation Details:**
+*   Abstracted `EVEREST_METERS` into a generic `CHALLENGES` array in `constants.ts` (Eiffel Tower, Burj Khalifa, Mt Fuji, Kilimanjaro, Everest, Mariana Trench).
+*   Added an interactive `<select>` dropdown in `StatsTab.tsx` to dynamically switch the active challenge, automatically recalculating the percentage and remaining meters.
+*   Added a progress bar highlighting the percentage complete (with a rocket emoji when surpassing 10%).
+*   Created a "Fun Facts" `lucide-react` info modal displaying equivalent distances in Adult Giraffes, Pizza Boxes, and the Statue of Liberty.
+
 ### 5. Feedback Mechanism
 *   **Action:** Add a simple `mailto:` link or a lightweight feedback form in the `HelpTab`.
