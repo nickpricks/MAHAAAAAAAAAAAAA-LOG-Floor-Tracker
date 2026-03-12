@@ -1,3 +1,7 @@
+/**
+ * Firebase integration and cloud synchronization utilities.
+ * Handles anonymous authentication and Firestore database operations.
+ */
 import { initializeApp } from "firebase/app";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc, collection, getDocs, writeBatch } from "firebase/firestore";
@@ -18,10 +22,12 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 
 /**
- * Authenticates the user anonymously and retrieves their full history from Firestore.
- * If mapping a local UUID to the cloud bucket, we ensure the cloud knows about this user.
+ * Generates an anonymous Google Cloud session for the given local UUID.
+ * 
+ * If the user's internet is disconnected, this will still resolve and Firebase
+ * will cache the auth state locally until the connection is restored.
  */
-export async function initializeFirebaseSession(uuid: string): Promise<Record<string, DailyRecord> | null> {
+export const initializeFirebaseSession = async (userId: string): Promise<Record<string, DailyRecord> | null> => {
   try {
     const userCredential = await signInAnonymously(auth);
     const user = userCredential.user;
@@ -31,7 +37,7 @@ export async function initializeFirebaseSession(uuid: string): Promise<Record<st
     // easier hash routing logic and sharing links.
     
     // Fetch user's existing data from Firestore
-    const userRecordsRef = collection(db, `users/${uuid}/logs`);
+    const userRecordsRef = collection(db, `users/${userId}/logs`);
     const snapshot = await getDocs(userRecordsRef);
     
     if (snapshot.empty) {
@@ -51,12 +57,14 @@ export async function initializeFirebaseSession(uuid: string): Promise<Record<st
 }
 
 /**
- * Syncs a single daily record to the cloud.
+ * Fire-and-forget sync function. Merges a single day's record into the cloud database.
+ * Thanks to Firestore's offline persistence, if this fails due to network loss, 
+ * the sdk caches the mutation and replays it automatically when the user goes back online.
  */
-export async function syncRecordToCloud(uuid: string, dateStr: string, record: DailyRecord) {
-  if (!uuid) return;
+export const syncRecordToCloud = async (userId: string, dateKey: string, record: DailyRecord) => {
+  if (!userId) return;
   try {
-    const recordRef = doc(db, `users/${uuid}/logs`, dateStr);
+    const recordRef = doc(db, `users/${userId}/logs`, dateKey);
     await setDoc(recordRef, record, { merge: true });
   } catch (error) {
     console.error("Firebase Sync Error:", error);

@@ -1,13 +1,19 @@
 import { DailyRecord } from '../types';
 import { DEV_MODE_QUERY_PARAM } from '../constants';
 
-/** Check if dev mode is enabled */
+/**
+ * Checks if the application is currently running in Developer Mode.
+ * Dev mode is activated by appending `?devMode=true` to the URL payload.
+ */
 export const isDevModeEnabled = (): boolean => {
   const params = new URLSearchParams(window.location.search);
   return params.get(DEV_MODE_QUERY_PARAM) === 'true';
 };
 
-/** Generate dummy data for testing */
+/**
+ * Generates a randomized set of fake daily records for the past 14 days.
+ * Incredibly useful for testing UI changes in the Stats and History tabs without manual logging.
+ */
 export const generateDummyData = (): Record<string, DailyRecord> => {
   const dummy: Record<string, DailyRecord> = {};
   const today = new Date();
@@ -27,7 +33,10 @@ export const generateDummyData = (): Record<string, DailyRecord> => {
   return dummy;
 };
 
-/** Confirm reset data */
+/**
+ * Simple wrapper around the browser's native confirm dialog.
+ * Prompts the user before destructively wiping all their local and cloud data.
+ */
 export const confirmResetData = (): boolean => {
   return window.confirm("Are you sure you want to delete all data on this device?");
 };

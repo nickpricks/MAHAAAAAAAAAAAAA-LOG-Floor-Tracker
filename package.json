@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
-    "verify": "vite build && test -f dist/index.html && echo '✅ Build verified'"
+    "verify": "vite build && shx test -f dist/index.html && echo '✅ Build verified'"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",

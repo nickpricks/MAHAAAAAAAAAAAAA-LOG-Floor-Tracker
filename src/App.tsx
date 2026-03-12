@@ -1,3 +1,7 @@
+/**
+ * Main application component.
+ * Orchestrates routing between tabs, manages global state, and handles Firebase syncing.
+ */
 import React from 'react';
 import HelpTab from './components/HelpTab';
 import NavigationTabs from './components/NavigationTabs';
