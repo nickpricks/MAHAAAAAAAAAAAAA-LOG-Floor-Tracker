@@ -1,6 +1,9 @@
 import { motion, useAnimationControls } from 'motion/react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { DailyRecord } from '../types';
+import { getDayName, getFormattedDate } from '../utils/date';
+import { TRACKER_UI } from '../constants';
+
 
 type Props = {
   todayTotal: number;
@@ -8,16 +11,15 @@ type Props = {
   sortedRecords: DailyRecord[];
 };
 
+
 export default function TrackerTab({ todayTotal, handleTap, sortedRecords }: Props) {
   const counterControls = useAnimationControls();
   const upControls = useAnimationControls();
   const downControls = useAnimationControls();
 
-  // Scale font from 4rem (0 floors) to 9rem (25+ floors)
-  const MIN_REM = 4;
-  const MAX_REM = 9;
-  const CAP = 25;
-  const fontSize = `${MIN_REM + (MAX_REM - MIN_REM) * (Math.min(todayTotal, CAP) / CAP)}rem`;
+  // Scale font from MIN_FONT_REM (0 floors) to MAX_FONT_REM (MAX_SCALE_FLOORS+ floors)
+  const { MIN_FONT_REM, MAX_FONT_REM, MAX_SCALE_FLOORS } = TRACKER_UI;
+  const fontSize = `${MIN_FONT_REM + (MAX_FONT_REM - MIN_FONT_REM) * (Math.min(todayTotal, MAX_SCALE_FLOORS) / MAX_SCALE_FLOORS)}rem`;
 
   const onTap = (type: 'up' | 'down') => {
     navigator.vibrate?.(20);
@@ -32,17 +34,6 @@ export default function TrackerTab({ todayTotal, handleTap, sortedRecords }: Pro
       transition: { duration: 0.6 },
     });
     handleTap(type);
-  };
-
-  const getDayName = (dateStr: string) => {
-    const [y, m, d] = dateStr.split('-');
-    const date = new Date(parseInt(y, 10), parseInt(m, 10) - 1, parseInt(d, 10));
-    return date.toLocaleDateString('en-US', { weekday: 'long' });
-  };
-
-  const getFormattedDate = (dateStr: string) => {
-    const [y, m, d] = dateStr.split('-');
-    return `${d}/${m}/${y}`;
   };
 
   return (
@@ -85,9 +76,12 @@ export default function TrackerTab({ todayTotal, handleTap, sortedRecords }: Pro
       <div className="w-full max-w-sm">
         <h2 className="text-lg font-bold text-zinc-700 mb-4 px-2">History</h2>
         <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
-          {sortedRecords.length === 0 ? (
+          {
+            sortedRecords.length === 0 &&
             <div className="p-6 text-center text-zinc-400 text-sm">No floors tracked yet.</div>
-          ) : (
+          }
+          {
+            sortedRecords.length !== 0 &&
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-zinc-50 border-b border-zinc-200 text-xs uppercase tracking-wider text-zinc-500">
@@ -106,7 +100,7 @@ export default function TrackerTab({ todayTotal, handleTap, sortedRecords }: Pro
                 ))}
               </tbody>
             </table>
-          )}
+          }
         </div>
       </div>
     </>
