@@ -1,22 +1,25 @@
 ---
-title: "Feedback"
-about: "Suggest an improvement or report a problem"
+name: Feedback
+description: Share your feedback or suggestions
 labels: [feedback]
 ---
 
-## Feedback Form
+## Your Feedback
 
-**Name:** 
+**What would you like to tell us?**
 
-**Email:** 
+<!-- Provide your feedback here -->
 
-**Feedback:**  
+**Type of Feedback:**
+- [ ] Suggestion/Enhancement
+- [ ] Bug Report
+- [ ] Documentation Improvement
+- [ ] Other
 
-_Provide your feedback here..._
+**Description:**
 
-**Suggestions for Improvement:**
-- _Your suggestions here..._
+<!-- Please describe your feedback in detail -->
 
----
+**Additional Context:**
 
-Thank you for taking the time to provide your feedback!
+<!-- Add any screenshots, logs, or other context here -->
