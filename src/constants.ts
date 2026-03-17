@@ -2,6 +2,8 @@
  * Global application constants.
  * Defines configuration values like storage keys, metrics, and climbing challenges.
  */
+export const APP_NAME = import.meta.env.VITE_APP_NAME || 'Floor Tracker';
+export const APP_VERSION = import.meta.env.VITE_APP_VERSION || 'v0.0.1';
 export const DEV_MODE_QUERY_PARAM = 'devMode';
 export const LOCAL_STORAGE_KEY = 'floorTrackerData';
 export const METERS_PER_FLOOR = 3;
@@ -19,3 +21,22 @@ export const TRACKER_UI = {
   MAX_FONT_REM: 9,
   MAX_SCALE_FLOORS: 25,
 };
+
+export const BENCHMARK_UUID = 'bench-1000-days';
+
+export const TABS = {
+  TRACKER: 'tracker',
+  STATS: 'stats',
+  HELP: 'help',
+  PROFILE: 'profile',
+} as const;
+
+export type TabType = typeof TABS[keyof typeof TABS];
+
+export const DEFAULT_CHALLENGE_ID = 'everest';
+
+export const THEMES = {
+  LIGHT: 'light',
+  DARK: 'dark',
+  SYSTEM: 'system',
+} as const;

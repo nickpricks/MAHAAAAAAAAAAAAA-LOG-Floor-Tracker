@@ -12,14 +12,14 @@ export default defineConfig(({mode}) => {
       react(), 
       tailwindcss(),
       VitePWA({
-        registerType: 'autoUpdate',
+        registerType: 'prompt',
         devOptions: { enabled: true },
         manifest: {
-          name: 'MAHA LOG — Floor Tracker',
-          short_name: 'MAHA LOG',
+          name: env.VITE_APP_NAME,
+          short_name: env.VITE_APP_NAME,
           description: 'A minimalist floor tracker',
-          theme_color: '#000000',
-          background_color: '#000000',
+          theme_color: '#facc15',
+          background_color: '#09090b',
           display: 'standalone',
           icons: [
             {

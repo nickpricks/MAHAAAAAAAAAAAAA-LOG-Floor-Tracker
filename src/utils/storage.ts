@@ -28,3 +28,26 @@ export const loadRecords = (): Record<string, DailyRecord> => {
 export const saveRecords = (records: Record<string, DailyRecord>): void => {
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(records));
 };
+
+/**
+ * Custom hook to throttle/debounce localStorage writes.
+ * Prevents excessive disk I/O on rapid interactions.
+ */
+import { useEffect, useRef } from 'react';
+
+export const useThrottledPersistence = (records: Record<string, DailyRecord>, delay = 2000) => {
+  const isInitialMount = useRef(true);
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    const handler = setTimeout(() => {
+      saveRecords(records);
+    }, delay);
+
+    return () => clearTimeout(handler);
+  }, [records, delay]);
+};

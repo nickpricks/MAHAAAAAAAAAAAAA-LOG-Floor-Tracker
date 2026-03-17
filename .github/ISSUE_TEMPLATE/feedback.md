@@ -1,7 +1,9 @@
 ---
-name: Feedback
-description: Share your feedback or suggestions
+name: Feedback & Bugs
+about: Share your feedback, bugs, or suggestions
+title: "[FEEDBACK] "
 labels: [feedback]
+assignees: nickpricks
 ---
 
 ## Your Feedback

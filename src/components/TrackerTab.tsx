@@ -2,7 +2,7 @@ import { motion, useAnimationControls } from 'motion/react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { DailyRecord } from '../types';
 import { getDayName, getFormattedDate } from '../utils/date';
-import { TRACKER_UI } from '../constants';
+import { TRACKER_UI, METERS_PER_FLOOR } from '../constants';
 
 
 type Props = {

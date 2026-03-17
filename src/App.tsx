@@ -1,35 +1,44 @@
-/**
- * Main application component.
- * Orchestrates routing between tabs, manages global state, and handles Firebase syncing.
- */
 import React from 'react';
 import HelpTab from './components/HelpTab';
 import NavigationTabs from './components/NavigationTabs';
 import OnboardingWarning from './components/OnboardingWarning';
 import StatsTab from './components/StatsTab';
 import TrackerTab from './components/TrackerTab';
+import UpdatePrompt from './components/UpdatePrompt';
+import ProfileTab from './components/ProfileTab';
+import { BENCHMARK_UUID, TABS, TabType } from './constants';
 import { DailyRecord } from './types';
 import { getTodayKey } from './utils/date';
 import { confirmResetData, generateDummyData } from './utils/dev';
-import { syncRecordToCloud } from './utils/firebase';
-import { loadRecords, saveRecords } from './utils/storage';
+import { loadRecords, useThrottledPersistence } from './utils/storage';
 import { useAppInitialization } from './utils/useAppInitialization';
+import { calculateTapUpdate, sortRecordsDesc } from './utils/appHelpers';
 
+import { Routes, Route, useParams, Navigate, useNavigate } from 'react-router-dom';
 
-export default function App() {
-  const [activeTab, setActiveTab] = React.useState<'tracker' | 'stats' | 'help'>('tracker');
+function MainApp() {
+  const { uuid } = useParams();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = React.useState<TabType>(TABS.TRACKER);
   const [records, setRecords] = React.useState<Record<string, DailyRecord>>(loadRecords);
   const [devMode, setDevMode] = React.useState(false);
 
-  // Custom hook manages UUID routing, Firebase Auth, Database Syncing, and DevMode checking
-  const { isDevUrl, userId, showWarning, setShowWarning } = useAppInitialization(setRecords);
+  // Custom hook manages Firebase Auth, Database Syncing, and DevMode checking
+  const { isDevUrl, userId, showWarning, setShowWarning, settings, updateSettings } = useAppInitialization(setRecords, uuid);
 
-  React.useEffect(() => {
-    saveRecords(records);
-  }, [records]);
+  // Throttled persistence (debounce 2s)
+  useThrottledPersistence(records);
 
   const injectDummyData = () => {
     setRecords(generateDummyData());
+  };
+
+  const handleRunBench = () => {
+    if (confirmResetData()) {
+      const data = generateDummyData(1000);
+      setRecords(data);
+      navigate(`/${BENCHMARK_UUID}`);
+    }
   };
 
   const resetData = () => {
@@ -39,44 +48,37 @@ export default function App() {
   };
 
   const handleTap = (type: 'up' | 'down') => {
-    const today = getTodayKey();
-    setRecords((prev) => {
-      const todayRecord = prev[today] || { dateStr: today, up: 0, down: 0, total: 0 };
-      const newUp = type === 'up' ? todayRecord.up + 1 : todayRecord.up;
-      const newDown = type === 'down' ? todayRecord.down + 1 : todayRecord.down;
-      const newTotal = newUp * 1 + newDown * 0.5;
-
-      const updatedRecord = {
-        ...todayRecord,
-        up: newUp,
-        down: newDown,
-        total: newTotal
-      };
-
-      // Fire and forget sync to cloud
-      if (userId) {
-        syncRecordToCloud(userId, today, updatedRecord);
-      }
-
-      return {
-        ...prev,
-        [today]: updatedRecord
-      };
-    });
+    setRecords((prev) => calculateTapUpdate(prev, type, userId));
   };
 
   const todayKey = getTodayKey();
   const todayTotal = records[todayKey]?.total || 0;
-  const sortedRecords = Object.values(records).sort((a, b) => b.dateStr.localeCompare(a.dateStr));
+  const sortedRecords = sortRecordsDesc(records);
+
+  // Theme monitoring
+  React.useEffect(() => {
+    const theme = settings.theme || 'system';
+    const root = window.document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else if (theme === 'light') {
+      root.classList.remove('dark');
+    } else {
+      // System
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      root.classList.toggle('dark', isDark);
+    }
+  }, [settings.theme]);
 
   return (
-    <div className="min-h-screen bg-zinc-50 flex flex-col items-center py-8 px-4 font-sans text-zinc-900">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col items-center py-8 px-4 font-sans text-zinc-900 dark:text-zinc-100 transition-colors duration-300">
       {/* Navigation Tabs */}
       <NavigationTabs activeTab={activeTab} setActiveTab={setActiveTab} />
       <OnboardingWarning showWarning={showWarning} setShowWarning={setShowWarning} />
+      <UpdatePrompt />
 
       {
-        activeTab === 'tracker' && (
+        activeTab === TABS.TRACKER && (
           <TrackerTab
             todayTotal={todayTotal}
             handleTap={handleTap}
@@ -86,16 +88,27 @@ export default function App() {
       }
 
       {
-        activeTab === 'stats' && (
+        activeTab === TABS.STATS && (
           <StatsTab
             records={records}
             todayKey={todayKey}
+            defaultChallengeId={settings.defaultChallenge}
           />
         )
       }
 
       {
-        activeTab === 'help' && <HelpTab />}
+        activeTab === TABS.HELP && <HelpTab />}
+
+      {
+        activeTab === TABS.PROFILE && (
+          <ProfileTab 
+            userId={userId} 
+            settings={settings} 
+            updateSettings={updateSettings} 
+          />
+        )
+      }
 
       {/* Dev Mode Toggle (Only visible if ?devMode=true) */}
       {
@@ -114,18 +127,26 @@ export default function App() {
             {
               devMode && (
                 <div className="mt-4 w-full bg-zinc-900 text-zinc-300 p-4 rounded-xl text-xs font-mono shadow-inner flex flex-col gap-4">
-                  <div className="flex gap-2">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={injectDummyData}
+                        className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 px-3 rounded-lg font-bold transition-colors"
+                      >
+                        Inject Dummy Data
+                      </button>
+                      <button
+                        onClick={resetData}
+                        className="flex-1 bg-red-600 hover:bg-red-500 text-white py-2 px-3 rounded-lg font-bold transition-colors"
+                      >
+                        Reset Data
+                      </button>
+                    </div>
                     <button
-                      onClick={injectDummyData}
-                      className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 px-3 rounded-lg font-bold transition-colors"
+                      onClick={handleRunBench}
+                      className="w-full bg-zinc-800 hover:bg-zinc-700 text-white py-2 px-3 rounded-lg font-bold transition-colors border border-zinc-700"
                     >
-                      Inject Dummy Data
-                    </button>
-                    <button
-                      onClick={resetData}
-                      className="flex-1 bg-red-600 hover:bg-red-500 text-white py-2 px-3 rounded-lg font-bold transition-colors"
-                    >
-                      Reset Data
+                      🚀 Run 1000-Day Bench
                     </button>
                   </div>
                   <div className="overflow-x-auto text-green-400 pt-2 border-t border-zinc-700">
@@ -138,5 +159,21 @@ export default function App() {
         )
       }
     </div>
+  );
+}
+
+export default function App() {
+  const storedId = localStorage.getItem('maha_user_id');
+  // Generate a temporary ID if none exists, but DON'T save it to localStorage yet.
+  // This allows useAppInitialization to detect that it's a first-time visit.
+  const tempId = React.useMemo(() => crypto.randomUUID(), []);
+  const defaultId = storedId || tempId;
+
+  return (
+    <Routes>
+      <Route path="/:uuid" element={<MainApp />} />
+      <Route path="/" element={<Navigate to={`/${defaultId}`} replace />} />
+      <Route path="*" element={<Navigate to={`/${defaultId}`} replace />} />
+    </Routes>
   );
 }
