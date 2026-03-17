@@ -11,18 +11,21 @@ export const isDevModeEnabled = (): boolean => {
 };
 
 /**
- * Generates a randomized set of fake daily records for the past 14 days.
- * Incredibly useful for testing UI changes in the Stats and History tabs without manual logging.
+ * Generates a randomized set of fake daily records for a specified number of days.
+ * 
+ * @param count The number of days of history to generate (default 30)
  */
-export const generateDummyData = (): Record<string, DailyRecord> => {
+export const generateDummyData = (count: number = 30): Record<string, DailyRecord> => {
   const dummy: Record<string, DailyRecord> = {};
   const today = new Date();
-  for (let i = 0; i < 30; i++) {
+  
+  // Faster loop for large generation
+  for (let i = 0; i < count; i++) {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
-    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    const up = Math.floor(Math.random() * 20) + 5; // 5 to 24
-    const down = Math.floor(Math.random() * 10); // 0 to 9
+    const dateStr = d.toISOString().split('T')[0];
+    const up = Math.floor(Math.random() * 20) + 5; 
+    const down = Math.floor(Math.random() * 10);
     dummy[dateStr] = {
       dateStr,
       up,

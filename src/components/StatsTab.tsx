@@ -1,34 +1,50 @@
 import React from 'react';
-import { Info, X } from 'lucide-react';
-import { CHALLENGES, METERS_PER_FLOOR } from '../constants';
+import { Info, X, Share2, Check, RefreshCw } from 'lucide-react';
+import { CHALLENGES, METERS_PER_FLOOR, DEFAULT_CHALLENGE_ID } from '../constants';
 import { DailyRecord } from '../types';
 import { getLast7DaysKeys } from '../utils/date';
-
+import { syncAllLocalToCloud } from '../utils/firebase';
+import { useParams } from 'react-router-dom';
+import { calculateMetrics, calculateProgress, formatMeters } from '../utils/statsHelpers';
 
 type Props = {
   records: Record<string, DailyRecord>;
   todayKey: string;
+  defaultChallengeId?: string;
 };
 
+export default function StatsTab({ records, todayKey, defaultChallengeId }: Props) {
+  const { uuid } = useParams();
+  const [challengeId, setChallengeId] = React.useState(defaultChallengeId || DEFAULT_CHALLENGE_ID);
 
-export default function StatsTab({ records, todayKey }: Props) {
-  const [challengeId, setChallengeId] = React.useState(CHALLENGES[4].id); // Default to Everest
+  React.useEffect(() => {
+    if (defaultChallengeId) {
+      setChallengeId(defaultChallengeId);
+    }
+  }, [defaultChallengeId]);
   const [showInfo, setShowInfo] = React.useState(false);
+  const [copied, setCopied] = React.useState(false);
+  const [isSyncing, setIsSyncing] = React.useState(false);
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleManualSync = async () => {
+    if (!uuid) return;
+    setIsSyncing(true);
+    await syncAllLocalToCloud(uuid, records);
+    setIsSyncing(false);
+  };
 
   const currentMonthPrefix = todayKey.substring(0, 7); // YYYY-MM
-  const last7Days = getLast7DaysKeys();
+  const last7Days = React.useMemo(() => getLast7DaysKeys(), []);
 
-  let todayFloors = 0;
-  let weekFloors = 0;
-  let monthFloors = 0;
-  let totalFloors = 0;
-
-  Object.values(records).forEach(record => {
-    totalFloors += record.total;
-    if (record.dateStr === todayKey) todayFloors += record.total;
-    if (last7Days.includes(record.dateStr)) weekFloors += record.total;
-    if (record.dateStr.startsWith(currentMonthPrefix)) monthFloors += record.total;
-  });
+  const { todayFloors, weekFloors, monthFloors, totalFloors } = React.useMemo(() => 
+    calculateMetrics(records, todayKey, last7Days, currentMonthPrefix),
+  [records, todayKey, last7Days, currentMonthPrefix]);
 
   const todayMeters = todayFloors * METERS_PER_FLOOR;
   const weekMeters = weekFloors * METERS_PER_FLOOR;
@@ -36,29 +52,45 @@ export default function StatsTab({ records, todayKey }: Props) {
   const totalMeters = totalFloors * METERS_PER_FLOOR;
 
   const activeChallenge = CHALLENGES.find(c => c.id === challengeId) || CHALLENGES[4];
-  const remainingMeters = Math.max(0, activeChallenge.meters - totalMeters);
-  const progressPercent = Math.min(100, (totalMeters / activeChallenge.meters) * 100);
+  const { remainingMeters, progressPercent } = calculateProgress(totalMeters, activeChallenge.meters);
 
   return (
     <div className="w-full max-w-sm bg-white p-8 rounded-[2rem] shadow-sm border border-zinc-200 flex flex-col gap-6">
-      <div className="text-center">
+      <div className="text-center relative">
+        <div className="absolute -top-2 -right-2 flex gap-2">
+          <button
+            onClick={handleManualSync}
+            disabled={isSyncing}
+            className={`p-2 bg-zinc-50 border border-zinc-200 rounded-full text-zinc-400 hover:text-blue-500 hover:border-blue-200 transition-all shadow-sm ${isSyncing ? 'animate-spin' : ''}`}
+            title="Sync all data to cloud"
+          >
+            <RefreshCw size={16} />
+          </button>
+          <button
+            onClick={handleCopyLink}
+            className="p-2 bg-zinc-50 border border-zinc-200 rounded-full text-zinc-400 hover:text-blue-500 hover:border-blue-200 transition-all shadow-sm"
+            title="Copy shareable link"
+          >
+            {copied ? <Check size={16} className="text-green-500" /> : <Share2 size={16} />}
+          </button>
+        </div>
         <div className="text-5xl mb-2">⛰️</div>
         <h2 className="text-2xl font-black text-zinc-800">Leaderboard</h2>
-        <p className="text-sm text-zinc-500 mt-1">1 floor ≈ 3 meters</p>
+        <p className="text-sm text-zinc-500 mt-1">1 floor ≈ {METERS_PER_FLOOR} meters</p>
       </div>
 
       <div className="flex flex-col gap-4 mt-2">
         <div className="flex justify-between items-center p-4 bg-zinc-50 rounded-2xl border border-zinc-100">
           <span className="font-bold text-zinc-600">Today</span>
-          <span className="text-xl font-black text-zinc-800 tabular-nums">{todayMeters.toLocaleString()} <span className="text-sm text-zinc-400 font-bold">m</span></span>
+          <span className="text-xl font-black text-zinc-800 tabular-nums">{formatMeters(todayMeters)} <span className="text-sm text-zinc-400 font-bold">m</span></span>
         </div>
         <div className="flex justify-between items-center p-4 bg-zinc-50 rounded-2xl border border-zinc-100">
           <span className="font-bold text-zinc-600">This Week</span>
-          <span className="text-xl font-black text-zinc-800 tabular-nums">{weekMeters.toLocaleString()} <span className="text-sm text-zinc-400 font-bold">m</span></span>
+          <span className="text-xl font-black text-zinc-800 tabular-nums">{formatMeters(weekMeters)} <span className="text-sm text-zinc-400 font-bold">m</span></span>
         </div>
         <div className="flex justify-between items-center p-4 bg-zinc-50 rounded-2xl border border-zinc-100">
           <span className="font-bold text-zinc-600">This Month</span>
-          <span className="text-xl font-black text-zinc-800 tabular-nums">{monthMeters.toLocaleString()} <span className="text-sm text-zinc-400 font-bold">m</span></span>
+          <span className="text-xl font-black text-zinc-800 tabular-nums">{formatMeters(monthMeters)} <span className="text-sm text-zinc-400 font-bold">m</span></span>
         </div>
       </div>
 
@@ -87,7 +119,7 @@ export default function StatsTab({ records, todayKey }: Props) {
           <span className="font-bold text-zinc-500 text-sm">Progress</span>
           <div className="flex items-baseline gap-2">
             <span className="text-3xl font-black text-blue-600 tracking-tighter">{progressPercent.toFixed(1)}%</span>
-            <span className="text-sm font-bold text-zinc-400 tabular-nums">({totalMeters.toLocaleString()} / {activeChallenge.meters.toLocaleString()} m)</span>
+            <span className="text-sm font-bold text-zinc-400 tabular-nums">({formatMeters(totalMeters)} / {formatMeters(activeChallenge.meters)} m)</span>
           </div>
         </div>
 
@@ -106,7 +138,7 @@ export default function StatsTab({ records, todayKey }: Props) {
         <p className="text-sm font-medium text-zinc-500 text-center mt-4">
           {
             remainingMeters > 0
-              ? `${remainingMeters.toLocaleString()} m remaining to summit!`
+              ? `${formatMeters(remainingMeters)} m remaining to summit!`
               : '🎉 You reached the top!'
           }
         </p>
@@ -130,7 +162,7 @@ export default function StatsTab({ records, todayKey }: Props) {
                 <span className="text-3xl">🦒</span>
                 <div>
                   <p className="font-bold text-orange-900">Adult Giraffes</p>
-                  <p className="text-sm text-orange-700">You've climbed the equivalent of <b>{Math.floor(totalMeters / 5).toLocaleString()}</b> stacked giraffes.</p>
+                  <p className="text-sm text-orange-700">You've climbed the equivalent of <b>{formatMeters(Math.floor(totalMeters / 5))}</b> stacked giraffes.</p>
                 </div>
               </div>
 
@@ -138,7 +170,7 @@ export default function StatsTab({ records, todayKey }: Props) {
                 <span className="text-3xl">🍕</span>
                 <div>
                   <p className="font-bold text-yellow-900">Pizza Boxes</p>
-                  <p className="text-sm text-yellow-700">That's about <b>{Math.floor(totalMeters / 0.045).toLocaleString()}</b> stacked pizza boxes!</p>
+                  <p className="text-sm text-yellow-700">That's about <b>{formatMeters(Math.floor(totalMeters / 0.045))}</b> stacked pizza boxes!</p>
                 </div>
               </div>
 

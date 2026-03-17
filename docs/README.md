@@ -1,5 +1,9 @@
-# docs/
+# Documentation Directory
 
-Project documentation and AI agent guidance files.
+Higher-level project documentation, architecture guides, and technical specifications.
 
-- **CLAUDE.md** — Instructions and architecture context for Claude Code when working in this repository.
+| File / Folder | Description |
+| :--- | :--- |
+| [CLAUDE.md](CLAUDE.md) | Dev workflow and environment rules |
+| [SecurityGuide.md](SecurityGuide.md) | Security architecture and keys handling |
+| [specs/](specs/) | Technical specs and workplans |

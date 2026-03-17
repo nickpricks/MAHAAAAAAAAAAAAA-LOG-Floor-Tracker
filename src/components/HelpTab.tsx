@@ -1,6 +1,7 @@
 import Markdown from 'react-markdown';
-import { Mail } from 'lucide-react';
+import { Github, MessageCircle } from 'lucide-react';
 import readmeContent from '../../README.md?raw';
+import { APP_NAME, APP_VERSION } from '../constants';
 
 export default function HelpTab() {
   return (
@@ -8,20 +9,26 @@ export default function HelpTab() {
       <div className="bg-white p-8 md:p-12 rounded-[2rem] shadow-sm border border-zinc-200">
         <div className="markdown-body">
           <Markdown>{readmeContent}</Markdown>
+          <div className="mt-8 pt-8 border-t border-zinc-100 flex justify-between items-center text-zinc-400 font-mono text-[10px] uppercase tracking-widest">
+            <span>{APP_NAME}</span>
+            <span>{APP_VERSION}</span>
+          </div>
         </div>
       </div>
       
       <div className="bg-blue-50 p-6 md:p-8 rounded-[2rem] border border-blue-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
         <div>
           <h3 className="text-lg font-bold text-blue-900">Have feedback or found a bug?</h3>
-          <p className="text-sm text-blue-700 mt-1">We'd love to hear from you to help improve MAHA LOG.</p>
+          <p className="text-sm text-blue-700 mt-1">Open an issue on GitHub to help us improve {APP_NAME}.</p>
         </div>
         <a 
-          href="mailto:feedback@example.com?subject=MAHA%20LOG%20Feedback" 
+          href="https://github.com/nickpricks/MAHAAAAAAAAAAAAA-LOG-Floor-Tracker/issues/new?template=feedback.md" 
+          target="_blank"
+          rel="noopener noreferrer"
           className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-full font-bold transition-all shadow-sm whitespace-nowrap"
         >
-          <Mail size={18} />
-          Send Feedback
+          <Github size={18} />
+          Report on GitHub
         </a>
       </div>
     </div>

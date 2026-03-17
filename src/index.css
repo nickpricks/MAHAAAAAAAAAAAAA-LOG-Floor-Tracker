@@ -10,3 +10,12 @@
   .markdown-body hr { @apply my-8 border-zinc-200; }
   .markdown-body strong { @apply font-bold text-zinc-900; }
 }
+
+@theme {
+  --animate-spin-slow: spin 3s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
