@@ -46,21 +46,21 @@ This workplan tracks the resolution of liabilities identified during the `/march
 > Full plan: [2026-03-18-audit-hardening.md](2026-03-18-audit-hardening.md)
 
 ### Critical (Must Fix)
-- [ ] 1. **Test Framework**: Set up Vitest (`vitest.config.ts`, test script)
-- [ ] 2. **Merge Logic (C2)**: Extract `mergeCloudIntoLocal` with per-field max, TDD
-- [ ] 3. **Discarded Fetch (C3)**: Simplify `initializeFirebaseSession` to auth-only, remove redundant `getDocs`
-- [ ] 4. **Firestore Rules (C1)**: Version-control `firestore.rules`, update SecurityGuide.md
+- [x] 1. **Test Framework**: Set up Vitest (`vitest.config.ts`, test script)
+- [x] 2. **Merge Logic (C2)**: Extract `mergeCloudIntoLocal` with per-field max, TDD
+- [x] 3. **Discarded Fetch (C3)**: Simplify `initializeFirebaseSession` to auth-only, remove redundant `getDocs`
+- [x] 4. **Firestore Rules (C1)**: Version-control `firestore.rules`, update SecurityGuide.md
 
 ### Important (Should Fix)
-- [ ] 5. **Batch Limit (I1)**: Chunk `syncAllLocalToCloud` into 499-op batches
-- [ ] 6. **Offline Persistence (I2)**: Enable `persistentLocalCache` in Firestore init
-- [ ] 7. **Dark Mode (I3)**: Add `dark:` variants to all components
-- [ ] 8. **Stale Dates (I4+I5)**: Midnight rollover for `todayKey`, fix `last7Days` deps
-- [ ] 9. **Core Tests (I6)**: Unit tests for appHelpers, statsHelpers, date utils
+- [x] 5. **Batch Limit (I1)**: Chunk `syncAllLocalToCloud` into 499-op batches
+- [x] 6. **Offline Persistence (I2)**: Enable `persistentLocalCache` in Firestore init
+- [x] 7. **Dark Mode (I3)**: Add `dark:` variants to all components
+- [x] 8. **Stale Dates (I4+I5)**: Midnight rollover for `todayKey`, fix `last7Days` deps
+- [x] 9. **Core Tests (I6)**: Unit tests for appHelpers, statsHelpers, date utils
 
 ### Cleanup
-- [ ] 10. **Code Sweep**: Unused imports, strict TS, package rename, CI env vars, title fallback
-- [ ] 11. **Documentation**: Update Audit-TLDR and WORKPLAN with results
+- [x] 10. **Code Sweep**: Unused imports, strict TS, package rename, CI env vars, title fallback
+- [x] 11. **Documentation**: Update Audit-TLDR and WORKPLAN with results
 
 ## Mission: Phase 4 - Analytics & Insights - Priority 2
 

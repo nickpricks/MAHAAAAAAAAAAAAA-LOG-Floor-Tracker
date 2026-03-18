@@ -51,7 +51,17 @@ function MainApp() {
     setRecords((prev) => calculateTapUpdate(prev, type, userId));
   };
 
-  const todayKey = getTodayKey();
+  const [todayKey, setTodayKey] = React.useState(getTodayKey);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      const newKey = getTodayKey();
+      if (newKey !== todayKey) {
+        setTodayKey(newKey);
+      }
+    }, 60_000);
+    return () => clearInterval(interval);
+  }, [todayKey]);
   const todayTotal = records[todayKey]?.total || 0;
   const sortedRecords = sortRecordsDesc(records);
 

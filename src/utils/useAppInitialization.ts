@@ -57,7 +57,7 @@ export const useAppInitialization = (
     }
 
     // 3. Initialize Firebase Anonymous Session
-    initializeFirebaseSession(activeId);
+    initializeFirebaseSession();
 
     // 4. Setup Real-time Listeners
     const unsubscribeLogs = subscribeToUserLogs(activeId, (cloudData) => {

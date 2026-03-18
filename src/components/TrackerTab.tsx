@@ -2,7 +2,7 @@ import { motion, useAnimationControls } from 'motion/react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import { DailyRecord } from '../types';
 import { getDayName, getFormattedDate } from '../utils/date';
-import { TRACKER_UI, METERS_PER_FLOOR } from '../constants';
+import { TRACKER_UI } from '../constants';
 
 
 type Props = {
@@ -39,9 +39,9 @@ export default function TrackerTab({ todayTotal, handleTap, sortedRecords }: Pro
   return (
     <>
       {/* Main Tracker */}
-      <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-zinc-200 flex flex-col items-center w-full max-w-sm mb-8">
+      <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2rem] shadow-sm border border-zinc-200 dark:border-zinc-800 flex flex-col items-center w-full max-w-sm mb-8">
         <div className="text-5xl mb-4">🏢</div>
-        <div className="text-sm font-bold tracking-[0.2em] text-zinc-400 uppercase mb-2">
+        <div className="text-sm font-bold tracking-[0.2em] text-zinc-400 dark:text-zinc-500 uppercase mb-2">
           Today's Floors
         </div>
 
@@ -57,7 +57,7 @@ export default function TrackerTab({ todayTotal, handleTap, sortedRecords }: Pro
           <motion.div
             animate={counterControls}
             style={{ fontSize }}
-            className="leading-none font-bold text-zinc-800 tabular-nums transition-all duration-300"
+            className="leading-none font-bold text-zinc-800 dark:text-zinc-100 tabular-nums transition-all duration-300"
           >
             {todayTotal}
           </motion.div>
@@ -74,28 +74,28 @@ export default function TrackerTab({ todayTotal, handleTap, sortedRecords }: Pro
 
       {/* History List */}
       <div className="w-full max-w-sm">
-        <h2 className="text-lg font-bold text-zinc-700 mb-4 px-2">History</h2>
-        <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
+        <h2 className="text-lg font-bold text-zinc-700 dark:text-zinc-300 mb-4 px-2">History</h2>
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-hidden">
           {
             sortedRecords.length === 0 &&
-            <div className="p-6 text-center text-zinc-400 text-sm">No floors tracked yet.</div>
+            <div className="p-6 text-center text-zinc-400 dark:text-zinc-500 text-sm">No floors tracked yet.</div>
           }
           {
             sortedRecords.length !== 0 &&
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-zinc-50 border-b border-zinc-200 text-xs uppercase tracking-wider text-zinc-500">
+                <tr className="bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700 text-xs uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
                   <th className="p-4 font-semibold">Day</th>
                   <th className="p-4 font-semibold">Date</th>
                   <th className="p-4 font-semibold text-right">Floors</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-100">
+              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
                 {sortedRecords.map((record) => (
-                  <tr key={record.dateStr} className="hover:bg-zinc-50 transition-colors">
-                    <td className="p-4 text-sm font-medium text-zinc-700">{getDayName(record.dateStr)}</td>
-                    <td className="p-4 text-sm text-zinc-500">{getFormattedDate(record.dateStr)}</td>
-                    <td className="p-4 text-base font-bold text-zinc-800 text-right tabular-nums">{record.total}</td>
+                  <tr key={record.dateStr} className="hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
+                    <td className="p-4 text-sm font-medium text-zinc-700 dark:text-zinc-300">{getDayName(record.dateStr)}</td>
+                    <td className="p-4 text-sm text-zinc-500 dark:text-zinc-400">{getFormattedDate(record.dateStr)}</td>
+                    <td className="p-4 text-base font-bold text-zinc-800 dark:text-zinc-100 text-right tabular-nums">{record.total}</td>
                   </tr>
                 ))}
               </tbody>
