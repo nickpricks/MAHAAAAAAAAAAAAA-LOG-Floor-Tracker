@@ -2,7 +2,7 @@ import React from 'react';
 import { DailyRecord } from '../types';
 import { isDevModeEnabled } from './dev';
 import { initializeFirebaseSession, syncAllLocalToCloud, subscribeToUserLogs, subscribeToUserSettings, UserSettings, saveUserSettings } from './firebase';
-import { calculateTapUpdate } from './appHelpers';
+import { mergeCloudIntoLocal } from './mergeRecords';
 
 type UseAppInitializationResult = {
   isDevUrl: boolean;
@@ -61,16 +61,7 @@ export const useAppInitialization = (
 
     // 4. Setup Real-time Listeners
     const unsubscribeLogs = subscribeToUserLogs(activeId, (cloudData) => {
-      setRecords((prev) => {
-        const merged = { ...prev };
-        Object.entries(cloudData).forEach(([date, cloudRecord]) => {
-          const localRecord = prev[date];
-          if (!localRecord || localRecord.up < cloudRecord.up || localRecord.down < cloudRecord.down) {
-            merged[date] = cloudRecord;
-          }
-        });
-        return merged;
-      });
+      setRecords((prev) => mergeCloudIntoLocal(prev, cloudData));
     });
 
     const unsubscribeSettings = subscribeToUserSettings(activeId, (cloudSettings) => {
