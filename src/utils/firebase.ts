@@ -3,8 +3,8 @@
  * Handles anonymous authentication and Firestore database operations.
  */
 import { initializeApp } from "firebase/app";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "firebase/auth";
-import { getFirestore, doc, setDoc, getDoc, collection, getDocs, writeBatch, onSnapshot, query, Unsubscribe } from "firebase/firestore";
+import { getAuth, signInAnonymously } from "firebase/auth";
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, setDoc, collection, writeBatch, onSnapshot, query, Unsubscribe } from "firebase/firestore";
 import { DailyRecord } from "../types";
 
 const firebaseConfig = {
@@ -19,42 +19,21 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+});
 
 /**
- * Generates an anonymous Google Cloud session for the given local UUID.
- * 
- * If the user's internet is disconnected, this will still resolve and Firebase
- * will cache the auth state locally until the connection is restored.
+ * Initializes an anonymous Firebase session.
+ * Data loading is handled by the onSnapshot real-time listener, not here.
  */
-export const initializeFirebaseSession = async (userId: string): Promise<Record<string, DailyRecord> | null> => {
+export const initializeFirebaseSession = async (): Promise<void> => {
   try {
-    const userCredential = await signInAnonymously(auth);
-    const user = userCredential.user;
-    
-    // We use the local UUID as the primary document key to link the device to the cloud.
-    // In a prod app, we might just use the Firebase `user.uid`, but keeping our UUID allows
-    // easier hash routing logic and sharing links.
-    
-    // Fetch user's existing data from Firestore
-    const userRecordsRef = collection(db, `users/${userId}/logs`);
-    const snapshot = await getDocs(userRecordsRef);
-    
-    if (snapshot.empty) {
-      return null;
-    }
-
-    const cloudRecords: Record<string, DailyRecord> = {};
-    snapshot.forEach(doc => {
-      cloudRecords[doc.id] = doc.data() as DailyRecord;
-    });
-    
-    return cloudRecords;
+    await signInAnonymously(auth);
   } catch (error) {
     console.error("Firebase Auth Error:", error);
-    return null;
   }
-}
+};
 
 /**
  * Fire-and-forget sync function. Merges a single day's record into the cloud database.
@@ -74,6 +53,8 @@ export const syncRecordToCloud = async (userId: string, dateKey: string, record:
   }
 }
 
+const FIRESTORE_BATCH_LIMIT = 499;
+
 /**
  * mass syncs multiple records (useful for initial migration of existing local storage).
  */
@@ -81,12 +62,16 @@ export async function syncAllLocalToCloud(uuid: string, records: Record<string, 
   if (!uuid || Object.keys(records).length === 0) return;
   setSyncStatus('syncing');
   try {
-    const batch = writeBatch(db);
-    Object.values(records).forEach(record => {
-      const recordRef = doc(db, `users/${uuid}/logs`, record.dateStr);
-      batch.set(recordRef, record, { merge: true });
-    });
-    await batch.commit();
+    const entries = Object.values(records);
+    for (let i = 0; i < entries.length; i += FIRESTORE_BATCH_LIMIT) {
+      const chunk = entries.slice(i, i + FIRESTORE_BATCH_LIMIT);
+      const batch = writeBatch(db);
+      chunk.forEach(record => {
+        const recordRef = doc(db, `users/${uuid}/logs`, record.dateStr);
+        batch.set(recordRef, record, { merge: true });
+      });
+      await batch.commit();
+    }
     setSyncStatus('synced');
   } catch (error) {
     console.error("Firebase Batch Sync Error:", error);

@@ -1,7 +1,7 @@
 # 🛗 Floor Tracker
 <!-- Origin: src/constants.ts (APP_NAME) -->
 
-**v0.0.3** <!-- Origin: src/constants.ts (APP_VERSION) --> · [Live App](https://nickpricks.github.io/MAHAAAAAAAAAAAAA-LOG-Floor-Tracker/)
+**v0.0.4** <!-- Origin: src/constants.ts (APP_VERSION) --> · [Live App](https://nickpricks.github.io/MAHAAAAAAAAAAAAA-LOG-Floor-Tracker/)
 
 A minimalist web application to track the number of floors you've climbed. Tap the elevator buttons. Watch the number grow.
 

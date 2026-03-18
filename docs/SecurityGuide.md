@@ -14,10 +14,15 @@ MAHA LOG follows a "Security through Rules" approach. In modern serverless appli
 *   **Hardening:** We recommend using **HTTP Referrer Restrictions** in the Google Cloud Console to ensure these keys can only be used from your specific domain (e.g., `nickpricks.github.io`).
 
 ### 2. Data Integrity (Firestore Rules)
-All data security is handled at the database level. Our Firestore Security Rules (defined in the Firebase Console) ensure:
-*   **Write Restriction:** A user can only write to a document if the `userId` in the path matches their authenticated session.
-*   **Read Restriction:** Users can only query their own floor logs. 
-*   **Validation:** Data must conform to the `DailyRecord` schema.
+Security rules are version-controlled in `firestore.rules` and should be deployed via `firebase deploy --only firestore:rules`.
+
+**Current posture (v0.0.4):**
+*   **Authentication Required:** All reads/writes require an anonymous Firebase session (`request.auth != null`).
+*   **Known Limitation:** Document paths use a local UUID from the URL, NOT `request.auth.uid`. This means an authenticated user could theoretically read/write another user's data if they know the UUID. The UUID is a 128-bit random value (effectively unguessable), but this is security-by-obscurity, not enforcement.
+
+**Future hardening (tracked in WORKPLAN):**
+*   Migrate document paths to use `request.auth.uid` and enforce `request.auth.uid == userId` in rules.
+*   Add schema validation rules for `DailyRecord` fields.
 
 ### 3. Anonymous Authentication (Ghost Users)
 We use Firebase Anonymous Auth to allow users to track data without a friction-filled login process.
