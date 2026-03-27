@@ -56,17 +56,24 @@ export const useAppInitialization = (
       localStorage.setItem('maha_user_id', activeId);
     }
 
-    // 3. Initialize Firebase Anonymous Session
-    initializeFirebaseSession();
+    // 3. Initialize Firebase Anonymous Session, then set up listeners
+    let unsubscribeLogs: (() => void) | undefined;
+    let unsubscribeSettings: (() => void) | undefined;
 
-    // 4. Setup Real-time Listeners
-    const unsubscribeLogs = subscribeToUserLogs(activeId, (cloudData) => {
-      setRecords((prev) => mergeCloudIntoLocal(prev, cloudData));
-    });
+    const init = async () => {
+      const authed = await initializeFirebaseSession();
+      if (!authed) return;
 
-    const unsubscribeSettings = subscribeToUserSettings(activeId, (cloudSettings) => {
-      setSettings(prev => ({ ...prev, ...cloudSettings }));
-    });
+      unsubscribeLogs = subscribeToUserLogs(activeId, (cloudData) => {
+        setRecords((prev) => mergeCloudIntoLocal(prev, cloudData));
+      });
+
+      unsubscribeSettings = subscribeToUserSettings(activeId, (cloudSettings) => {
+        setSettings(prev => ({ ...prev, ...cloudSettings }));
+      });
+    };
+
+    init();
 
     // Handle warning for brand new users (no stored ID yet)
     if (!storedId && activeId) {
@@ -74,8 +81,8 @@ export const useAppInitialization = (
     }
 
     return () => {
-      unsubscribeLogs();
-      unsubscribeSettings();
+      unsubscribeLogs?.();
+      unsubscribeSettings?.();
     };
   }, [setRecords, uuid]);
 

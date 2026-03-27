@@ -1,4 +1,5 @@
 import { DailyRecord } from '../types';
+import { calculateTotal } from './appHelpers';
 
 /**
  * Merges cloud records into local state using per-field max strategy.
@@ -28,7 +29,7 @@ export const mergeCloudIntoLocal = (
         dateStr: date,
         up: maxUp,
         down: maxDown,
-        total: maxUp + maxDown * 0.5,
+        total: calculateTotal(maxUp, maxDown),
       };
       changed = true;
     }

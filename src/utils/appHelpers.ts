@@ -3,6 +3,11 @@ import { getTodayKey } from './date';
 import { syncRecordToCloud } from './firebase';
 
 /**
+ * Scoring formula: up = 1 point, down = 0.5 points.
+ */
+export const calculateTotal = (up: number, down: number): number => up + down * 0.5;
+
+/**
  * Calculates the new state for a tap event.
  */
 export const calculateTapUpdate = (
@@ -14,7 +19,7 @@ export const calculateTapUpdate = (
   const todayRecord = prev[today] || { dateStr: today, up: 0, down: 0, total: 0 };
   const newUp = type === 'up' ? todayRecord.up + 1 : todayRecord.up;
   const newDown = type === 'down' ? todayRecord.down + 1 : todayRecord.down;
-  const newTotal = newUp * 1 + newDown * 0.5;
+  const newTotal = calculateTotal(newUp, newDown);
 
   const updatedRecord = {
     ...todayRecord,

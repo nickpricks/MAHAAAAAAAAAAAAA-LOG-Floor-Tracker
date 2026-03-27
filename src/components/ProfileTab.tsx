@@ -25,7 +25,7 @@ export default function ProfileTab({ userId, settings, updateSettings }: Props) 
         <div className="w-20 h-20 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4 border border-zinc-200 dark:border-zinc-700 text-zinc-400 dark:text-zinc-500">
           <User size={40} />
         </div>
-        <h2 className="text-2xl font-black text-zinc-800 dark:text-zinc-100">Your Profile</h2>
+        <h2 className="text-2xl font-display font-extrabold text-zinc-800 dark:text-zinc-100">Your Profile</h2>
         <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Synced across your devices</p>
       </div>
 
@@ -59,7 +59,7 @@ export default function ProfileTab({ userId, settings, updateSettings }: Props) 
                 onClick={() => updateSettings({ theme: t.id })}
                 className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all ${
                   active
-                    ? 'bg-zinc-900 dark:bg-white border-zinc-900 dark:border-white text-white dark:text-zinc-900 shadow-md'
+                    ? 'bg-amber-500 border-amber-500 text-zinc-900 shadow-md shadow-amber-500/20'
                     : 'bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 hover:border-zinc-300 dark:hover:border-zinc-600'
                 }`}
               >

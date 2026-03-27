@@ -1,51 +1,65 @@
-# Audit TL;DR: MAHA LOG — Floor Tracker (v0.0.3)
+# Audit TL;DR: MAHA LOG — Floor Tracker (v0.0.4)
 
-## 🛠️ Technical Health Summary
-The system has been hardened and refactored. Most high-priority technical debt from the initial audit has been resolved.
+---
 
-### ✅ Resolved Technical Debt
-1.  **Dependency Bloat**: Pruned unused backend/template dependencies from `package.json`.
-2.  **Brittle Routing**: Migrated to `react-router-dom` for robust UUID handling.
-3.  **Persistence Bottleneck**: Implemented 2s throttled `localStorage` writes.
-4.  **Logic Entanglement**: Extracted 10+ business logic helpers into `utils/` (appHelpers, statsHelpers).
-5.  **Real-Time listeners**: Added `onSnapshot` for instant multi-device updates.
-6.  **PWA Strategy**: Switched to `prompt` update method to prevent silent session loss.
+## Open Items
 
-### ✅ Resolved by 2026-03-18 Audit Hardening
+| Priority | ID | Issue | Source |
+|----------|----|-------|--------|
+| P4 | I8 | ~979KB JS chunk (Firebase) — lazy-load / code-split | 2026-03-18 audit |
+| P4 | F1 | Firebase UID Migration — switch doc paths from URL UUID to `request.auth.uid` for enforceable security rules | 2026-03-18 audit, all 5 reviewers flagged |
+| P4 | F2 | Memory Management — all history loaded into RAM; paginated IndexedDB for 3-5yr users | 2026-03-18 audit |
+| P4 | F3 | Data Recovery — JSON export/import for "Ghost User" recovery | 2026-03-18 audit |
+| P5 | F4 | Firestore schema validation rules for `DailyRecord` fields | SecurityGuide.md |
+| P5 | F5 | Generate PNG PWA icons — open `scripts/generate-icons.html` in browser, save to `public/` | 2026-03-27 UI refresh |
 
-A full code review on 2026-03-18 found critical bugs and incomplete implementations. All items below have been fixed:
+---
 
-#### Critical (Fixed)
-| ID | Issue | Fix |
-|----|-------|-----|
-| C1 | Firestore rules not enforced | Added `firestore.rules` to repo, updated SecurityGuide.md with honest posture |
-| C2 | Merge logic loses data (OR-based) | Extracted `mergeCloudIntoLocal` with per-field `Math.max`, 5 unit tests |
-| C3 | Initial cloud fetch discarded | Simplified `initializeFirebaseSession` to auth-only, removed redundant `getDocs` |
+## Resolved — Phase 1-2 (Initial Build)
 
-#### Important (Fixed)
-| ID | Issue | Fix |
-|----|-------|-----|
-| I1 | Batch exceeds 500-op limit | Chunked into 499-op batches |
-| I2 | Offline persistence not enabled | Switched to `initializeFirestore` with `persistentLocalCache` |
-| I3 | Dark mode broken | Added `dark:` variants to all 6 components |
-| I4 | `todayKey` stale past midnight | Added 60s interval rollover via `useState`/`useEffect` |
-| I5 | `last7Days` frozen on mount | Fixed useMemo deps to include `todayKey` |
-| I6 | Zero test coverage | 21 tests across 4 suites (mergeRecords, appHelpers, statsHelpers, date) |
-| I7 | Unused `registerSW` import | Removed |
+1. **Dependency Bloat**: Pruned unused backend/template dependencies from `package.json`.
+2. **Brittle Routing**: Migrated to `react-router-dom` for robust UUID handling.
+3. **Persistence Bottleneck**: Implemented 2s throttled `localStorage` writes.
+4. **Logic Entanglement**: Extracted 10+ business logic helpers into `utils/`.
+5. **Real-Time listeners**: Added `onSnapshot` for instant multi-device updates.
+6. **PWA Strategy**: Switched to `prompt` update method to prevent silent session loss.
 
-#### Minor (Fixed)
-All unused imports removed, `as any` cast fixed with proper typing, `%VITE_APP_NAME%` hardcoded in HTML + CI env, package renamed to `maha-log-floor-tracker`, `strict: true` enabled in tsconfig.
+## Resolved — Phase 3: Audit Hardening (2026-03-18)
 
-#### Deferred
-| ID | Issue | Reason |
-|----|-------|--------|
-| I8 | ~979KB JS chunk (Firebase) | Optimization, not correctness — deferred to Phase 4 |
+> Full plan: [2026-03-18-audit-hardening-resolved.md](2026-03-18-audit-hardening-resolved.md) (11 tasks, all complete)
 
-### 🕒 Future Considerations (P4+)
-- **Memory Management**: Currently loads all history into RAM. In 3-5 years of daily logging, consider a paginated IndexedDB/Dexie.js approach.
-- **Enhanced Data Recovery**: Further improvements to "Ghost User" recovery (e.g., direct JSON export/import).
-- **Firebase UID Migration**: Switch document paths from local UUID to `request.auth.uid` for enforceable security rules.
-- **Code Splitting**: Lazy-load Firebase to reduce initial bundle size (~I8).
+| ID | Sev | Issue | Fix |
+|----|-----|-------|-----|
+| C1 | Crit | Firestore rules not enforced | Added `firestore.rules`, updated SecurityGuide.md |
+| C2 | Crit | Merge logic loses data (OR-based) | `mergeCloudIntoLocal` with per-field `Math.max`, 5 tests |
+| C3 | Crit | Initial cloud fetch discarded | Simplified `initializeFirebaseSession` to auth-only |
+| I1 | Imp | Batch exceeds 500-op limit | Chunked into 499-op batches |
+| I2 | Imp | Offline persistence not enabled | `initializeFirestore` with `persistentLocalCache` |
+| I3 | Imp | Dark mode broken | Added `dark:` variants to all 6 components |
+| I4 | Imp | `todayKey` stale past midnight | 60s interval rollover |
+| I5 | Imp | `last7Days` frozen on mount | Fixed useMemo deps |
+| I6 | Imp | Zero test coverage | 21 tests across 4 suites |
+| I7 | Minor | Unused `registerSW` import | Removed |
+| — | Minor | Cleanup sweep | Strict TS, package rename, CI env, title fallback, unused imports |
 
-## 🚀 Execution Status
-Phase 1-2 addressed as of Sweep E. **Phase 3 (Hardening) complete** — all 11 tasks done. See [2026-03-18-audit-hardening.md](2026-03-18-audit-hardening.md).
+## Resolved — Phase 3.5: Post-Hardening Review (2026-03-27)
+
+> Full review: [2026-03-27-audit-review-resolved.md](2026-03-27-audit-review-resolved.md) (9 findings + 2 bonus fixes)
+
+| ID | Sev | Issue | Fix |
+|----|-----|-------|-----|
+| N1 | High | Gemini API key injected into client bundle | Removed `define` block from `vite.config.ts` |
+| N2 | High | Auth failure silently swallowed | Returns `boolean`, sets `setSyncStatus('error')` |
+| N3 | High | Listeners race authentication | `useAppInitialization` awaits auth before subscribing |
+| N4 | Med | StatsTab violates presentational convention | Lifted to `App.tsx`, passed as `onManualSync` prop |
+| N5 | Med | NavigationTabs violates presentational convention | Lifted `useSyncStatus()` to `App.tsx` |
+| N6 | Med | Scoring formula duplicated 3x | Extracted `calculateTotal()` in `appHelpers.ts` |
+| N7 | Low | `confirmResetData` JSDoc claims cloud wipe | Updated comment |
+| N8 | Low | Firestore rules comments misleading | Updated to reflect actual behavior |
+| N9 | Low | Dead `docs/CLAUDE.md` redirect | Deleted |
+| — | Bug | Tailwind v4 class-based dark mode never worked | Added `@custom-variant dark` to `index.css` |
+| — | Bug | Nav bar overflows on mobile (375px) | Redesigned: sync dot inside bar, responsive padding |
+
+## Resolved — Phase 3.5: UI Refresh (2026-03-27)
+
+"Summit Instrument" design system: warm stone palette, Syne + JetBrains Mono typography, topographic background, amber brass accent, altitude readout glow. SVG favicon with ascending staircase motif.
