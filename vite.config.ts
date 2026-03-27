@@ -18,8 +18,8 @@ export default defineConfig(({mode}) => {
           name: env.VITE_APP_NAME,
           short_name: env.VITE_APP_NAME,
           description: 'A minimalist floor tracker',
-          theme_color: '#facc15',
-          background_color: '#09090b',
+          theme_color: '#f59e0b',
+          background_color: '#0c0a09',
           display: 'standalone',
           icons: [
             {
@@ -36,9 +36,6 @@ export default defineConfig(({mode}) => {
         }
       })
     ],
-    define: {
-      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

@@ -43,7 +43,7 @@ This workplan tracks the resolution of liabilities identified during the `/march
 
 ## Mission: Phase 3 - Audit Hardening - Priority 1
 
-> Full plan: [2026-03-18-audit-hardening.md](2026-03-18-audit-hardening.md)
+> Full plan: [2026-03-18-audit-hardening-resolved.md](2026-03-18-audit-hardening-resolved.md)
 
 ### Critical (Must Fix)
 - [x] 1. **Test Framework**: Set up Vitest (`vitest.config.ts`, test script)
@@ -62,7 +62,40 @@ This workplan tracks the resolution of liabilities identified during the `/march
 - [x] 10. **Code Sweep**: Unused imports, strict TS, package rename, CI env vars, title fallback
 - [x] 11. **Documentation**: Update Audit-TLDR and WORKPLAN with results
 
-## Mission: Phase 4 - Analytics & Insights - Priority 2
+## Mission: Phase 3.5 - Post-Hardening Review + UI Polish
 
-### Tasks
-- [ ] 1. **Dashboard**: Build a simple unified dashboard view for richer analytics.
+> Full review: [2026-03-27-audit-review.md](2026-03-27-audit-review.md)
+
+### Audit Fixes (N1-N9)
+- [x] 1. **Gemini Key (N1)**: Remove dead `GEMINI_API_KEY` define from `vite.config.ts`
+- [x] 2. **Auth Failure (N2)**: `initializeFirebaseSession` returns boolean, sets sync status on error
+- [x] 3. **Auth Race (N3)**: Await auth before setting up Firestore listeners in `useAppInitialization`
+- [x] 4. **StatsTab Convention (N4)**: Lift `syncAllLocalToCloud` + `uuid` to `App.tsx`, pass as `onManualSync` prop
+- [x] 5. **NavigationTabs Convention (N5)**: Lift `useSyncStatus()` to `App.tsx`, pass as `syncStatus` prop
+- [x] 6. **DRY Scoring (N6)**: Extract `calculateTotal()` in `appHelpers.ts`, import in `mergeRecords.ts` + `dev.ts`
+- [x] 7. **Comment Fixes (N7-N9)**: Fix JSDoc, firestore.rules comments, delete dead `docs/CLAUDE.md`
+
+### Bug Fixes
+- [x] 8. **Dark Mode (Tailwind v4)**: Add `@custom-variant dark` — class-based dark mode was never working
+- [x] 9. **Mobile Nav Overflow**: Redesign NavigationTabs — sync indicator inside tab bar, responsive padding
+
+### UI Redesign ("Summit Instrument")
+- [x] 10. **Design System**: Warm stone palette, Syne + JetBrains Mono fonts, topographic background
+- [x] 11. **Tracker**: Brass amber button, altitude readout with glow, contour ring decorations
+- [x] 12. **Accent System**: Amber active tabs, progress bar, theme buttons, history totals
+- [x] 13. **PWA Icons**: SVG favicon (ascending staircase), icon generation utility
+- [x] 14. **Documentation**: Update CLAUDE.md, Audit-TLDR, WORKPLAN
+
+## Mission: Phase 4 - Identity, Security & Analytics - Priority 2
+
+### Security
+- [ ] 1. **Deploy Firestore Rules**: Run `firebase deploy --only firestore:rules` (rules are version-controlled in `firestore.rules` but never deployed)
+- [ ] 2. **Firebase UID Migration (F1)**: Switch Firestore doc paths from URL UUID to `request.auth.uid`, enforce `request.auth.uid == userId` in rules. Requires data migration for existing users.
+
+### Identity & Usernames
+- [ ] 3. **Username Selection**: Add optional username field to Profile page (replace raw UUID display). Store in `users/{uuid}/settings/profile` as `username`. Validate uniqueness via a top-level `usernames/{username} → {uuid}` Firestore collection.
+- [ ] 4. **Dual Routing**: Support both `/:uuid` and `/:username` routes. On `/:username`, look up UUID from `usernames` collection, redirect or resolve. Existing UUID links keep working.
+- [ ] 5. **Shareable Profile URLs**: Update "Copy shareable link" to prefer `/:username` when set.
+
+### Analytics
+- [ ] 6. **Dashboard**: Build a simple unified dashboard view for richer analytics.

@@ -13,6 +13,7 @@ import { confirmResetData, generateDummyData } from './utils/dev';
 import { loadRecords, useThrottledPersistence } from './utils/storage';
 import { useAppInitialization } from './utils/useAppInitialization';
 import { calculateTapUpdate, sortRecordsDesc } from './utils/appHelpers';
+import { syncAllLocalToCloud, useSyncStatus } from './utils/firebase';
 
 import { Routes, Route, useParams, Navigate, useNavigate } from 'react-router-dom';
 
@@ -25,6 +26,12 @@ function MainApp() {
 
   // Custom hook manages Firebase Auth, Database Syncing, and DevMode checking
   const { isDevUrl, userId, showWarning, setShowWarning, settings, updateSettings } = useAppInitialization(setRecords, uuid);
+  const syncStatus = useSyncStatus();
+
+  const handleManualSync = async () => {
+    if (!uuid) return;
+    await syncAllLocalToCloud(uuid, records);
+  };
 
   // Throttled persistence (debounce 2s)
   useThrottledPersistence(records);
@@ -81,9 +88,9 @@ function MainApp() {
   }, [settings.theme]);
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col items-center py-8 px-4 font-sans text-zinc-900 dark:text-zinc-100 transition-colors duration-300">
+    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 bg-topo flex flex-col items-center py-8 px-4 font-sans text-zinc-900 dark:text-zinc-100 transition-colors duration-300">
       {/* Navigation Tabs */}
-      <NavigationTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+      <NavigationTabs activeTab={activeTab} setActiveTab={setActiveTab} syncStatus={syncStatus} />
       <OnboardingWarning showWarning={showWarning} setShowWarning={setShowWarning} />
       <UpdatePrompt />
 
@@ -103,6 +110,7 @@ function MainApp() {
             records={records}
             todayKey={todayKey}
             defaultChallengeId={settings.defaultChallenge}
+            onManualSync={handleManualSync}
           />
         )
       }

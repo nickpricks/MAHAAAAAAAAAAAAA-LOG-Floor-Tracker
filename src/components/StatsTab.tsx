@@ -3,18 +3,16 @@ import { Info, X, Share2, Check, RefreshCw } from 'lucide-react';
 import { CHALLENGES, METERS_PER_FLOOR, DEFAULT_CHALLENGE_ID } from '../constants';
 import { DailyRecord } from '../types';
 import { getLast7DaysKeys } from '../utils/date';
-import { syncAllLocalToCloud } from '../utils/firebase';
-import { useParams } from 'react-router-dom';
 import { calculateMetrics, calculateProgress, formatMeters } from '../utils/statsHelpers';
 
 type Props = {
   records: Record<string, DailyRecord>;
   todayKey: string;
   defaultChallengeId?: string;
+  onManualSync: () => Promise<void>;
 };
 
-export default function StatsTab({ records, todayKey, defaultChallengeId }: Props) {
-  const { uuid } = useParams();
+export default function StatsTab({ records, todayKey, defaultChallengeId, onManualSync }: Props) {
   const [challengeId, setChallengeId] = React.useState(defaultChallengeId || DEFAULT_CHALLENGE_ID);
 
   React.useEffect(() => {
@@ -33,9 +31,8 @@ export default function StatsTab({ records, todayKey, defaultChallengeId }: Prop
   };
 
   const handleManualSync = async () => {
-    if (!uuid) return;
     setIsSyncing(true);
-    await syncAllLocalToCloud(uuid, records);
+    await onManualSync();
     setIsSyncing(false);
   };
 
@@ -75,22 +72,22 @@ export default function StatsTab({ records, todayKey, defaultChallengeId }: Prop
           </button>
         </div>
         <div className="text-5xl mb-2">⛰️</div>
-        <h2 className="text-2xl font-black text-zinc-800 dark:text-zinc-100">Leaderboard</h2>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">1 floor ≈ {METERS_PER_FLOOR} meters</p>
+        <h2 className="text-2xl font-display font-extrabold text-zinc-800 dark:text-zinc-100">Leaderboard</h2>
+        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 font-mono">1 floor ≈ {METERS_PER_FLOOR} meters</p>
       </div>
 
       <div className="flex flex-col gap-4 mt-2">
         <div className="flex justify-between items-center p-4 bg-zinc-50 dark:bg-zinc-800 rounded-2xl border border-zinc-100 dark:border-zinc-800">
           <span className="font-bold text-zinc-600 dark:text-zinc-300">Today</span>
-          <span className="text-xl font-black text-zinc-800 dark:text-zinc-100 tabular-nums">{formatMeters(todayMeters)} <span className="text-sm text-zinc-400 dark:text-zinc-500 font-bold">m</span></span>
+          <span className="text-xl font-bold font-mono text-zinc-800 dark:text-zinc-100 tabular-nums">{formatMeters(todayMeters)} <span className="text-sm text-zinc-400 dark:text-zinc-500 font-bold">m</span></span>
         </div>
         <div className="flex justify-between items-center p-4 bg-zinc-50 dark:bg-zinc-800 rounded-2xl border border-zinc-100 dark:border-zinc-800">
           <span className="font-bold text-zinc-600 dark:text-zinc-300">This Week</span>
-          <span className="text-xl font-black text-zinc-800 dark:text-zinc-100 tabular-nums">{formatMeters(weekMeters)} <span className="text-sm text-zinc-400 dark:text-zinc-500 font-bold">m</span></span>
+          <span className="text-xl font-bold font-mono text-zinc-800 dark:text-zinc-100 tabular-nums">{formatMeters(weekMeters)} <span className="text-sm text-zinc-400 dark:text-zinc-500 font-bold">m</span></span>
         </div>
         <div className="flex justify-between items-center p-4 bg-zinc-50 dark:bg-zinc-800 rounded-2xl border border-zinc-100 dark:border-zinc-800">
           <span className="font-bold text-zinc-600 dark:text-zinc-300">This Month</span>
-          <span className="text-xl font-black text-zinc-800 dark:text-zinc-100 tabular-nums">{formatMeters(monthMeters)} <span className="text-sm text-zinc-400 dark:text-zinc-500 font-bold">m</span></span>
+          <span className="text-xl font-bold font-mono text-zinc-800 dark:text-zinc-100 tabular-nums">{formatMeters(monthMeters)} <span className="text-sm text-zinc-400 dark:text-zinc-500 font-bold">m</span></span>
         </div>
       </div>
 
@@ -118,14 +115,14 @@ export default function StatsTab({ records, todayKey, defaultChallengeId }: Prop
         <div className="flex justify-between items-end mb-2">
           <span className="font-bold text-zinc-500 dark:text-zinc-400 text-sm">Progress</span>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-black text-blue-600 tracking-tighter">{progressPercent.toFixed(1)}%</span>
+            <span className="text-3xl font-bold font-mono text-amber-600 dark:text-amber-400 tracking-tighter">{progressPercent.toFixed(1)}%</span>
             <span className="text-sm font-bold text-zinc-400 dark:text-zinc-500 tabular-nums">({formatMeters(totalMeters)} / {formatMeters(activeChallenge.meters)} m)</span>
           </div>
         </div>
 
         <div className="w-full bg-zinc-100 dark:bg-zinc-800 rounded-full h-6 mb-3 overflow-hidden shadow-inner border border-zinc-200/50 dark:border-zinc-700/50">
           <div
-            className="bg-gradient-to-r from-blue-500 via-indigo-500 to-blue-500 h-6 rounded-full transition-all duration-1000 ease-out flex items-center justify-end px-2"
+            className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 h-6 rounded-full transition-all duration-1000 ease-out flex items-center justify-end px-2"
             style={{ width: `${Math.max(5, progressPercent)}%` }}
           >
             {

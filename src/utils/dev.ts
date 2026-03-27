@@ -1,5 +1,6 @@
 import { DailyRecord } from '../types';
 import { DEV_MODE_QUERY_PARAM } from '../constants';
+import { calculateTotal } from './appHelpers';
 
 /**
  * Checks if the application is currently running in Developer Mode.
@@ -30,7 +31,7 @@ export const generateDummyData = (count: number = 30): Record<string, DailyRecor
       dateStr,
       up,
       down,
-      total: up * 1 + down * 0.5
+      total: calculateTotal(up, down)
     };
   }
   return dummy;
@@ -38,7 +39,7 @@ export const generateDummyData = (count: number = 30): Record<string, DailyRecor
 
 /**
  * Simple wrapper around the browser's native confirm dialog.
- * Prompts the user before destructively wiping all their local and cloud data.
+ * Prompts the user before wiping local data. Cloud data is not affected.
  */
 export const confirmResetData = (): boolean => {
   return window.confirm("Are you sure you want to delete all data on this device?");

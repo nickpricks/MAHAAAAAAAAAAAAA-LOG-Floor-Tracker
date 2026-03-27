@@ -27,11 +27,14 @@ export const db = initializeFirestore(app, {
  * Initializes an anonymous Firebase session.
  * Data loading is handled by the onSnapshot real-time listener, not here.
  */
-export const initializeFirebaseSession = async (): Promise<void> => {
+export const initializeFirebaseSession = async (): Promise<boolean> => {
   try {
     await signInAnonymously(auth);
+    return true;
   } catch (error) {
     console.error("Firebase Auth Error:", error);
+    setSyncStatus('error');
+    return false;
   }
 };
 

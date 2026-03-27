@@ -1,62 +1,77 @@
 import React from 'react';
-import { useSyncStatus } from '../utils/firebase';
 import { Cloud, CloudOff, RefreshCw, AlertCircle, User } from 'lucide-react';
 import { TABS, TabType } from '../constants';
+import type { SyncStatus } from '../utils/firebase';
 
 type Props = {
   activeTab: TabType;
   setActiveTab: React.Dispatch<React.SetStateAction<TabType>>;
+  syncStatus: SyncStatus;
 };
 
-export default function NavigationTabs({ activeTab, setActiveTab }: Props) {
-  const syncStatus = useSyncStatus();
+const syncDot: Record<SyncStatus, string> = {
+  synced: 'bg-emerald-400',
+  syncing: 'bg-blue-400 animate-pulse',
+  error: 'bg-red-400',
+  offline: 'bg-zinc-400',
+};
+
+export default function NavigationTabs({ activeTab, setActiveTab, syncStatus }: Props) {
 
   const getSyncIcon = () => {
     switch (syncStatus) {
       case 'syncing':
-        return <RefreshCw className="w-4 h-4 text-blue-500 animate-spin-slow" />;
+        return <RefreshCw className="w-3.5 h-3.5 text-blue-500 animate-spin-slow" />;
       case 'error':
-        return <AlertCircle className="w-4 h-4 text-red-500" />;
+        return <AlertCircle className="w-3.5 h-3.5 text-red-500" />;
       case 'offline':
-        return <CloudOff className="w-4 h-4 text-zinc-400" />;
+        return <CloudOff className="w-3.5 h-3.5 text-zinc-400" />;
       default:
-        return <Cloud className="w-4 h-4 text-zinc-300" />;
+        return <Cloud className="w-3.5 h-3.5 text-zinc-300 dark:text-zinc-500" />;
     }
   };
 
+  const tabClass = (tab: TabType) =>
+    `px-3 sm:px-5 py-2 rounded-full text-sm font-display font-bold transition-all whitespace-nowrap ${
+      activeTab === tab
+        ? 'bg-amber-500 text-zinc-900 shadow-md shadow-amber-500/20'
+        : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+    }`;
+
   return (
-    <div className="flex items-center gap-3 mb-8">
-      <div className="flex gap-1 bg-white dark:bg-zinc-900 p-1.5 rounded-full shadow-sm border border-zinc-200 dark:border-zinc-800 overflow-x-auto max-w-full">
-        <button
-          onClick={() => setActiveTab(TABS.TRACKER)}
-          className={`px-5 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap ${activeTab === TABS.TRACKER ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 shadow-md dark:shadow-zinc-800' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
-        >
-          Tracker
-        </button>
-        <button
-          onClick={() => setActiveTab(TABS.STATS)}
-          className={`px-5 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap ${activeTab === TABS.STATS ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 shadow-md dark:shadow-zinc-800' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
-        >
-          Stats
-        </button>
-        <button
-          onClick={() => setActiveTab(TABS.HELP)}
-          className={`px-5 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap ${activeTab === TABS.HELP ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 shadow-md dark:shadow-zinc-800' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
-        >
-          Help
-        </button>
-        <button
-          onClick={() => setActiveTab(TABS.PROFILE)}
-          className={`px-5 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap flex items-center gap-2 ${activeTab === TABS.PROFILE ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 shadow-md dark:shadow-zinc-800' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800'}`}
-        >
-          <User size={14} />
-          Profile
-        </button>
+    <div className="flex items-center gap-1.5 bg-white dark:bg-zinc-900 p-1.5 rounded-full shadow-sm border border-zinc-200 dark:border-zinc-800 mb-8 max-w-full">
+      {/* Sync status indicator — compact dot on mobile, icon on larger screens */}
+      <div
+        className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center"
+        title={`Sync: ${syncStatus}`}
+      >
+        <span className="sm:hidden relative flex h-2.5 w-2.5">
+          {syncStatus === 'syncing' && (
+            <span className="absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75 animate-ping" />
+          )}
+          <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${syncDot[syncStatus]}`} />
+        </span>
+        <span className="hidden sm:flex">
+          {getSyncIcon()}
+        </span>
       </div>
 
-      <div className="bg-white dark:bg-zinc-900 p-2 rounded-full shadow-sm border border-zinc-200 dark:border-zinc-800 flex items-center justify-center" title={`Sync Status: ${syncStatus}`}>
-        {getSyncIcon()}
-      </div>
+      <button onClick={() => setActiveTab(TABS.TRACKER)} className={tabClass(TABS.TRACKER)}>
+        Tracker
+      </button>
+      <button onClick={() => setActiveTab(TABS.STATS)} className={tabClass(TABS.STATS)}>
+        Stats
+      </button>
+      <button onClick={() => setActiveTab(TABS.HELP)} className={tabClass(TABS.HELP)}>
+        Help
+      </button>
+      <button
+        onClick={() => setActiveTab(TABS.PROFILE)}
+        className={`${tabClass(TABS.PROFILE)} flex items-center gap-1.5`}
+      >
+        <User size={14} />
+        <span className="hidden sm:inline">Profile</span>
+      </button>
     </div>
   );
 }
