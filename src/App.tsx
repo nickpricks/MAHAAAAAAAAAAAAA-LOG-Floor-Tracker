@@ -1,21 +1,21 @@
 import React from 'react';
-import HelpTab from './components/HelpTab';
-import NavigationTabs from './components/NavigationTabs';
-import OnboardingWarning from './components/OnboardingWarning';
-import StatsTab from './components/StatsTab';
-import TrackerTab from './components/TrackerTab';
-import UpdatePrompt from './components/UpdatePrompt';
-import ProfileTab from './components/ProfileTab';
-import { BENCHMARK_UUID, TABS, TabType } from './constants';
-import { DailyRecord } from './types';
-import { getTodayKey } from './utils/date';
-import { confirmResetData, generateDummyData } from './utils/dev';
-import { loadRecords, useThrottledPersistence } from './utils/storage';
-import { useAppInitialization } from './utils/useAppInitialization';
-import { calculateTapUpdate, sortRecordsDesc } from './utils/appHelpers';
-import { syncAllLocalToCloud, useSyncStatus } from './utils/firebase';
+import { Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom';
+import HelpTab from '@components/HelpTab';
+import NavigationTabs from '@components/NavigationTabs';
+import OnboardingWarning from '@components/OnboardingWarning';
+import ProfileTab from '@components/ProfileTab';
+import StatsTab from '@components/StatsTab';
+import TrackerTab from '@components/TrackerTab';
+import UpdatePrompt from '@components/UpdatePrompt';
+import { BENCHMARK_UUID, TABS, TabType } from '@/constants';
+import { DailyRecord } from '@/types';
+import { calculateTapUpdate, sortRecordsDesc } from '@utils/appHelpers';
+import { getTodayKey } from '@utils/date';
+import { confirmResetData, generateDummyData } from '@utils/dev';
+import { syncAllLocalToCloud, useSyncStatus } from '@utils/firebase';
+import { loadRecords, useThrottledPersistence } from '@utils/storage';
+import { useAppInitialization } from '@utils/useAppInitialization';
 
-import { Routes, Route, useParams, Navigate, useNavigate } from 'react-router-dom';
 
 function MainApp() {
   const { uuid } = useParams();

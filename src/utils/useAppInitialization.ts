@@ -1,8 +1,8 @@
 import React from 'react';
-import { DailyRecord } from '../types';
-import { isDevModeEnabled } from './dev';
-import { initializeFirebaseSession, syncAllLocalToCloud, subscribeToUserLogs, subscribeToUserSettings, UserSettings, saveUserSettings } from './firebase';
-import { mergeCloudIntoLocal } from './mergeRecords';
+import { DailyRecord } from '@/types';
+import { isDevModeEnabled } from '@utils/dev';
+import { initializeFirebaseSession, syncAllLocalToCloud, subscribeToUserLogs, subscribeToUserSettings, UserSettings, saveUserSettings } from '@utils/firebase';
+import { mergeCloudIntoLocal } from '@utils/mergeRecords';
 
 type UseAppInitializationResult = {
   isDevUrl: boolean;

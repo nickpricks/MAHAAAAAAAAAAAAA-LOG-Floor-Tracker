@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateMetrics, calculateProgress, formatMeters } from '../statsHelpers';
+import { calculateMetrics, calculateProgress, formatMeters } from '@utils/statsHelpers';
 
 describe('calculateMetrics', () => {
   const records = {

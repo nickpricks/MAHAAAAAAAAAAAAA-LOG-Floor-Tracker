@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getTodayKey, getLast7DaysKeys, getDayName, getFormattedDate } from '../date';
+import { getTodayKey, getLast7DaysKeys, getDayName, getFormattedDate } from '@utils/date';
 
 describe('getTodayKey', () => {
   it('returns YYYY-MM-DD format', () => {

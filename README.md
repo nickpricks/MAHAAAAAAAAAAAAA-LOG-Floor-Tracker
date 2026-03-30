@@ -40,3 +40,9 @@ Floor Tracker is designed to be the most frictionless way to log activity. Our c
 | **Phase 2: Sync & Personalization** | ✅ Completed | Real-time Firestore Sync, Profile Tab (Themes/Settings), Performance Benchmarks |
 | **Phase 3: Analytics & Insights** | 🗓️ Planned | Dashboard, Advanced Data Visualization (Recharts), Historical Trends, Visual Journey Maps |
 | **Phase 4: "Total Health" Ecosystem** | 🗓️ Planned | Modular Health Logging (Water/Macros), Social Competitions, Contextual Health Advice |
+
+---
+
+## 🤝 Contributing Rules
+
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for our coding guidelines and import conventions.

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Info, X, Share2, Check, RefreshCw } from 'lucide-react';
-import { CHALLENGES, METERS_PER_FLOOR, DEFAULT_CHALLENGE_ID } from '../constants';
-import { DailyRecord } from '../types';
-import { getLast7DaysKeys } from '../utils/date';
-import { calculateMetrics, calculateProgress, formatMeters } from '../utils/statsHelpers';
+import { CHALLENGES, METERS_PER_FLOOR, DEFAULT_CHALLENGE_ID } from '@/constants';
+import { DailyRecord } from '@/types';
+import { getLast7DaysKeys } from '@utils/date';
+import { calculateMetrics, calculateProgress, formatMeters } from '@utils/statsHelpers';
 
 type Props = {
   records: Record<string, DailyRecord>;

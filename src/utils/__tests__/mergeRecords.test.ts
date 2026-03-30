@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { mergeCloudIntoLocal } from '../mergeRecords';
-import { DailyRecord } from '../../types';
+import { mergeCloudIntoLocal } from '@utils/mergeRecords';
+import { DailyRecord } from '@/types';
 
 const makeRecord = (dateStr: string, up: number, down: number): DailyRecord => ({
   dateStr,

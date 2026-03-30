@@ -1,7 +1,7 @@
 import React from 'react';
 import { Cloud, CloudOff, RefreshCw, AlertCircle, User } from 'lucide-react';
-import { TABS, TabType } from '../constants';
-import type { SyncStatus } from '../utils/firebase';
+import { TABS, TabType } from '@/constants';
+import type { SyncStatus } from '@utils/firebase';
 
 type Props = {
   activeTab: TabType;

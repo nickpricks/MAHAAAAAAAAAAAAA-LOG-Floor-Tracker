@@ -1,4 +1,4 @@
-import { DailyRecord } from '../types';
+import { DailyRecord } from '@/types';
 
 /**
  * Calculates metrics (today, week, month, total) from records.

@@ -1,7 +1,7 @@
 import Markdown from 'react-markdown';
 import { Github, MessageCircle } from 'lucide-react';
 import readmeContent from '../../README.md?raw';
-import { APP_NAME, APP_VERSION } from '../constants';
+import { APP_NAME, APP_VERSION } from '@/constants';
 
 export default function HelpTab() {
   return (

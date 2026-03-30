@@ -1,6 +1,6 @@
-import { DailyRecord } from '../types';
-import { getTodayKey } from './date';
-import { syncRecordToCloud } from './firebase';
+import { DailyRecord } from '@/types';
+import { getTodayKey } from '@utils/date';
+import { syncRecordToCloud } from '@utils/firebase';
 
 /**
  * Scoring formula: up = 1 point, down = 0.5 points.

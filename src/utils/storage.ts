@@ -2,8 +2,8 @@
  * Browser LocalStorage utility functions.
  * Manages persisting active session data offline.
  */
-import { LOCAL_STORAGE_KEY } from '../constants';
-import { DailyRecord } from '../types';
+import { LOCAL_STORAGE_KEY } from '@/constants';
+import { DailyRecord } from '@/types';
 
 /**
  * Parses the user's saved floor climbing history from the browser's LocalStorage.

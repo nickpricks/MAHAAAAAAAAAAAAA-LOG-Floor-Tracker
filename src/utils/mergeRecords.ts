@@ -1,5 +1,5 @@
-import { DailyRecord } from '../types';
-import { calculateTotal } from './appHelpers';
+import { DailyRecord } from '@/types';
+import { calculateTotal } from '@utils/appHelpers';
 
 /**
  * Merges cloud records into local state using per-field max strategy.
