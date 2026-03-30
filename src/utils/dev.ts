@@ -1,6 +1,6 @@
-import { DailyRecord } from '../types';
-import { DEV_MODE_QUERY_PARAM } from '../constants';
-import { calculateTotal } from './appHelpers';
+import { DailyRecord } from '@/types';
+import { DEV_MODE_QUERY_PARAM } from '@/constants';
+import { calculateTotal } from '@utils/appHelpers';
 
 /**
  * Checks if the application is currently running in Developer Mode.

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { calculateTapUpdate, sortRecordsDesc } from '../appHelpers';
+import { calculateTapUpdate, sortRecordsDesc } from '@utils/appHelpers';
 
 // Mock firebase sync (fire-and-forget, don't need real Firebase)
 vi.mock('../firebase', () => ({

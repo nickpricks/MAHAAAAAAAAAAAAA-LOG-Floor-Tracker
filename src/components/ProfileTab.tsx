@@ -1,7 +1,7 @@
 import React from 'react';
 import { User, Moon, Sun, Monitor, Hash, ShieldCheck, Trophy } from 'lucide-react';
-import { CHALLENGES, THEMES } from '../constants';
-import { UserSettings } from '../utils/firebase';
+import { CHALLENGES, THEMES } from '@/constants';
+import { UserSettings } from '@utils/firebase';
 
 type Props = {
   userId: string | null;

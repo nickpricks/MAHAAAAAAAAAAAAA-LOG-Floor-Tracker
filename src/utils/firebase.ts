@@ -5,7 +5,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signInAnonymously } from "firebase/auth";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, setDoc, collection, writeBatch, onSnapshot, query, Unsubscribe } from "firebase/firestore";
-import { DailyRecord } from "../types";
+import { DailyRecord } from '@/types';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAA7FWIPFgAr72Fz1oUaFx6HfS_EqAXptU",
