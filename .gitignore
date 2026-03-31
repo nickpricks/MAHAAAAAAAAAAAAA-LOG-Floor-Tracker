@@ -46,3 +46,6 @@ coverage
 # E2E test artifacts
 e2e/screenshots/
 e2e/results/
+
+# Skill
+.final-countdown-reports/
