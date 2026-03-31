@@ -1,0 +1,28 @@
+/* ── Industrial Furnace (dark-only) ────────────────────────── */
+
+.theme-industrial-furnace {
+  --bg-primary: #100804;
+  --bg-card: #1a0f08;
+  --bg-surface: #241810;
+  --bg-hover: #2e1e14;
+  --text-primary: #c8a888;
+  --text-heading: #e8c8a8;
+  --text-muted: #886848;
+  --text-subtle: #584030;
+  --accent: #ff6820;
+  --accent-dim: #cc5018;
+  --accent-secondary: #ffaa30;
+  --accent-glow: rgba(255, 104, 32, 0.35);
+  --border-color: #2a1a10;
+  --border-subtle: #382418;
+  --font-theme-display: 'Syne', ui-sans-serif, system-ui, sans-serif;
+  --font-theme-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* ── Background Pattern ───────────────────────────────────── */
+
+.theme-industrial-furnace .bg-topo {
+  background-image:
+    repeating-linear-gradient(90deg, transparent, transparent 6px, rgba(255,100,20,0.02) 6px, rgba(255,100,20,0.02) 7px),
+    repeating-linear-gradient(0deg, transparent, transparent 6px, rgba(255,100,20,0.01) 6px, rgba(255,100,20,0.01) 7px);
+}

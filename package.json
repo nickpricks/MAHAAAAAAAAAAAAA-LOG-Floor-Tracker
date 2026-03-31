@@ -1,17 +1,21 @@
 {
-  "name": "maha-log-floor-tracker",
+  "name": "floor-tracker",
   "private": true,
-  "version": "0.0.4",
+  "version": "0.0.5",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build && node -e \"fs.copyFileSync('dist/index.html', 'dist/404.html')\"",
-    "preview": "vite preview",
-    "clean": "rm -rf dist",
+    "preview": "vite build && vite preview",
+    "build:clean": "shx rm -rf dist dev-dist",
+    "clean": "bun run build:clean && bun run test:clean",
     "lint": "tsc --noEmit",
     "verify": "vite build && shx test -f dist/index.html && echo '✅ Build verified'",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:themes": "playwright test e2e/theme-test.spec.ts",
+    "test:themes:debug": "PWDEBUG=1 playwright test e2e/theme-test.spec.ts --headed",
+    "test:clean": "shx rm -rf e2e/screenshots e2e/results test-results playwright-report"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.14",
@@ -25,6 +29,7 @@
     "react-router-dom": "^7.1.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@types/bun": "latest",
     "@types/node": "^22.14.0",
     "@types/react": "^19.2.14",

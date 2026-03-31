@@ -13,6 +13,14 @@ service cloud.firestore {
       allow read, write: if request.auth != null;
     }
 
+    // Usernames: authenticated users can read (for lookups), create, and delete.
+    // Note: proper ownership enforcement (uuid == auth.uid) deferred to UID migration (Phase 4 #2).
+    match /usernames/{username} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow delete: if request.auth != null;
+    }
+
     // Deny everything else
     match /{document=**} {
       allow read, write: if false;

@@ -7,30 +7,70 @@ import ProfileTab from '@components/ProfileTab';
 import StatsTab from '@components/StatsTab';
 import TrackerTab from '@components/TrackerTab';
 import UpdatePrompt from '@components/UpdatePrompt';
-import { BENCHMARK_UUID, TABS, TabType } from '@/constants';
+import UsernamePopup from '@components/UsernamePopup';
+import { BENCHMARK_UUID, DEFAULT_THEME_ID, TABS, TabType } from '@/constants';
 import { DailyRecord } from '@/types';
 import { calculateTapUpdate, sortRecordsDesc } from '@utils/appHelpers';
 import { getTodayKey } from '@utils/date';
 import { confirmResetData, generateDummyData } from '@utils/dev';
-import { syncAllLocalToCloud, useSyncStatus } from '@utils/firebase';
+import { lookupUsername, syncAllLocalToCloud, useSyncStatus } from '@utils/firebase';
 import { loadRecords, useThrottledPersistence } from '@utils/storage';
+import { applyTheme, isValidThemeId } from '@utils/themes';
+import type { ThemeId } from '@utils/themes';
 import { useAppInitialization } from '@utils/useAppInitialization';
 
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 function MainApp() {
-  const { uuid } = useParams();
+  const { identifier } = useParams<{ identifier: string }>();
   const navigate = useNavigate();
+  const [resolvedUuid, setResolvedUuid] = React.useState<string | null>(null);
+  const [resolving, setResolving] = React.useState(true);
+  const [themePreview, setThemePreview] = React.useState<ThemeId | null>(null);
   const [activeTab, setActiveTab] = React.useState<TabType>(TABS.TRACKER);
   const [records, setRecords] = React.useState<Record<string, DailyRecord>>(loadRecords);
   const [devMode, setDevMode] = React.useState(false);
 
+  React.useEffect(() => {
+    if (!identifier) return;
+
+    if (UUID_REGEX.test(identifier)) {
+      setResolvedUuid(identifier);
+      setResolving(false);
+    } else if (isValidThemeId(identifier)) {
+      // Theme preview mode: force this theme, use a demo UUID
+      setThemePreview(identifier as ThemeId);
+      applyTheme(identifier as ThemeId, 'dark');
+      const demoId = 'theme-preview-' + identifier;
+      setResolvedUuid(demoId);
+      setResolving(false);
+    } else {
+      lookupUsername(identifier).then((uuid) => {
+        if (uuid) {
+          setResolvedUuid(uuid);
+        } else {
+          navigate('/', { replace: true });
+        }
+        setResolving(false);
+      });
+    }
+  }, [identifier, navigate]);
+
+  React.useEffect(() => {
+    if (resolvedUuid && identifier && !UUID_REGEX.test(identifier) && !isValidThemeId(identifier)) {
+      localStorage.setItem('maha_username', identifier);
+    }
+  }, [resolvedUuid, identifier]);
+
   // Custom hook manages Firebase Auth, Database Syncing, and DevMode checking
-  const { isDevUrl, userId, showWarning, setShowWarning, settings, updateSettings } = useAppInitialization(setRecords, uuid);
+  const { isDevUrl, userId, showWarning, setShowWarning, settings, updateSettings } = useAppInitialization(setRecords, themePreview ? undefined : resolvedUuid ?? undefined);
   const syncStatus = useSyncStatus();
+  const [showUsernamePopup, setShowUsernamePopup] = React.useState(false);
 
   const handleManualSync = async () => {
-    if (!uuid) return;
-    await syncAllLocalToCloud(uuid, records);
+    if (!resolvedUuid) return;
+    await syncAllLocalToCloud(resolvedUuid, records);
   };
 
   // Throttled persistence (debounce 2s)
@@ -74,25 +114,55 @@ function MainApp() {
 
   // Theme monitoring
   React.useEffect(() => {
-    const theme = settings.theme || 'system';
-    const root = window.document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else if (theme === 'light') {
-      root.classList.remove('dark');
-    } else {
-      // System
-      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      root.classList.toggle('dark', isDark);
+    // Theme preview from URL takes priority over settings
+    if (themePreview) {
+      applyTheme(themePreview, 'dark');
+      return;
     }
-  }, [settings.theme]);
+    const themeId: ThemeId = isValidThemeId(settings.theme ?? '') ? (settings.theme as ThemeId) : DEFAULT_THEME_ID;
+    const colorMode = settings.colorMode || 'system';
+    applyTheme(themeId, colorMode);
+  }, [settings.theme, settings.colorMode, themePreview]);
+
+  // Show username popup for first-time users after warning is dismissed
+  React.useEffect(() => {
+    if (!showWarning && userId && !settings.username && localStorage.getItem('maha_user_id') === userId) {
+      const isNewUser = !localStorage.getItem('maha_username_prompted');
+      if (isNewUser) {
+        setShowUsernamePopup(true);
+      }
+    }
+  }, [showWarning, userId, settings.username]);
+
+  if (resolving) {
+    return (
+      <div className="min-h-screen bg-surface bg-topo flex items-center justify-center text-fg-muted">
+        <div className="font-mono text-sm animate-pulse">Loading...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 bg-topo flex flex-col items-center py-8 px-4 font-sans text-zinc-900 dark:text-zinc-100 transition-colors duration-300">
+    <div className="min-h-screen bg-surface bg-topo flex flex-col items-center py-8 px-4 font-sans text-fg transition-colors duration-300">
+      {/* Ambient effects layer (bubbles, embers, scanlines — theme-dependent) */}
+      <div className="fx-ambient" />
       {/* Navigation Tabs */}
       <NavigationTabs activeTab={activeTab} setActiveTab={setActiveTab} syncStatus={syncStatus} />
       <OnboardingWarning showWarning={showWarning} setShowWarning={setShowWarning} />
       <UpdatePrompt />
+
+      {showUsernamePopup && userId && (
+        <UsernamePopup
+          userId={userId}
+          onComplete={(username) => {
+            setShowUsernamePopup(false);
+            localStorage.setItem('maha_username_prompted', 'true');
+            if (username) {
+              navigate(`/${username}`, { replace: true });
+            }
+          }}
+        />
+      )}
 
       {
         activeTab === TABS.TRACKER && (
@@ -181,17 +251,23 @@ function MainApp() {
 }
 
 export default function App() {
+  React.useEffect(() => {
+    const root = document.documentElement;
+    if (!root.className.includes('theme-')) {
+      root.classList.add('theme-summit-instrument');
+    }
+  }, []);
+
   const storedId = localStorage.getItem('maha_user_id');
-  // Generate a temporary ID if none exists, but DON'T save it to localStorage yet.
-  // This allows useAppInitialization to detect that it's a first-time visit.
+  const storedUsername = localStorage.getItem('maha_username');
   const tempId = React.useMemo(() => crypto.randomUUID(), []);
-  const defaultId = storedId || tempId;
+  const defaultRoute = storedUsername || storedId || tempId;
 
   return (
     <Routes>
-      <Route path="/:uuid" element={<MainApp />} />
-      <Route path="/" element={<Navigate to={`/${defaultId}`} replace />} />
-      <Route path="*" element={<Navigate to={`/${defaultId}`} replace />} />
+      <Route path="/:identifier" element={<MainApp />} />
+      <Route path="/" element={<Navigate to={`/${defaultRoute}`} replace />} />
+      <Route path="*" element={<Navigate to={`/${defaultRoute}`} replace />} />
     </Routes>
   );
 }

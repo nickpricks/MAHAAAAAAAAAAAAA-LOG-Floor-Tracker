@@ -1,0 +1,45 @@
+/* ── Corporate Glass Tower (light + dark) ──────────────────── */
+
+.theme-corporate-glass {
+  --bg-primary: #f0f4f8;
+  --bg-card: #ffffff;
+  --bg-surface: #e8edf2;
+  --bg-hover: #dce3ea;
+  --text-primary: #1a2836;
+  --text-heading: #0f1c28;
+  --text-muted: #5a6e80;
+  --text-subtle: #8a9aaa;
+  --accent: #0070c0;
+  --accent-dim: #005a9a;
+  --accent-secondary: #00a8b0;
+  --accent-glow: rgba(0, 112, 192, 0.2);
+  --border-color: #d0d8e0;
+  --border-subtle: #e0e6ec;
+  --font-theme-display: 'Syne', ui-sans-serif, system-ui, sans-serif;
+  --font-theme-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+.theme-corporate-glass.dark {
+  --bg-primary: #0c1218;
+  --bg-card: #141c24;
+  --bg-surface: #1c2630;
+  --bg-hover: #243040;
+  --text-primary: #b0c0d0;
+  --text-heading: #d0dce8;
+  --text-muted: #607080;
+  --text-subtle: #3a4a5a;
+  --accent: #40a0e0;
+  --accent-dim: #3088c0;
+  --accent-secondary: #40c8d0;
+  --accent-glow: rgba(64, 160, 224, 0.25);
+  --border-color: #1c2a38;
+  --border-subtle: #243240;
+}
+
+/* ── Background Pattern ───────────────────────────────────── */
+
+.theme-corporate-glass .bg-topo {
+  background-image:
+    linear-gradient(135deg, rgba(100,140,180,0.03) 0%, transparent 50%),
+    repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(100,140,180,0.015) 60px, rgba(100,140,180,0.015) 61px);
+}

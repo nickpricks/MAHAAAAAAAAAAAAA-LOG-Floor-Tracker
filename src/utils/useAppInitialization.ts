@@ -3,6 +3,8 @@ import { DailyRecord } from '@/types';
 import { isDevModeEnabled } from '@utils/dev';
 import { initializeFirebaseSession, syncAllLocalToCloud, subscribeToUserLogs, subscribeToUserSettings, UserSettings, saveUserSettings } from '@utils/firebase';
 import { mergeCloudIntoLocal } from '@utils/mergeRecords';
+import { isValidThemeId } from '@utils/themes';
+import { DEFAULT_THEME_ID } from '@/constants';
 
 type UseAppInitializationResult = {
   isDevUrl: boolean;
@@ -69,7 +71,14 @@ export const useAppInitialization = (
       });
 
       unsubscribeSettings = subscribeToUserSettings(activeId, (cloudSettings) => {
-        setSettings(prev => ({ ...prev, ...cloudSettings }));
+        const migrated = { ...cloudSettings };
+        if (migrated.theme && !isValidThemeId(migrated.theme)) {
+          // Old value was a color mode, not a theme ID — migrate
+          migrated.colorMode = migrated.theme as 'light' | 'dark' | 'system';
+          migrated.theme = DEFAULT_THEME_ID;
+          saveUserSettings(activeId, { theme: migrated.theme, colorMode: migrated.colorMode });
+        }
+        setSettings(prev => ({ ...prev, ...migrated }));
       });
     };
 

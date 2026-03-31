@@ -2,9 +2,10 @@
  * Firebase integration and cloud synchronization utilities.
  * Handles anonymous authentication and Firestore database operations.
  */
+import type { ThemeId } from '@utils/themes';
 import { initializeApp } from "firebase/app";
 import { getAuth, signInAnonymously } from "firebase/auth";
-import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, setDoc, collection, writeBatch, onSnapshot, query, Unsubscribe } from "firebase/firestore";
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, setDoc, getDoc, deleteDoc, collection, writeBatch, onSnapshot, query, runTransaction, Unsubscribe } from "firebase/firestore";
 import { DailyRecord } from '@/types';
 
 const firebaseConfig = {
@@ -107,9 +108,11 @@ export const subscribeToUserLogs = (
  * User Settings Sync logic
  */
 export type UserSettings = {
-  theme?: 'light' | 'dark' | 'system';
+  theme?: ThemeId | 'light' | 'dark' | 'system'; // ThemeId preferred; legacy values migrated on read
+  colorMode?: 'light' | 'dark' | 'system';
   defaultChallenge?: string;
   email?: string;
+  username?: string;
   updatedAt?: number;
 };
 
@@ -134,6 +137,63 @@ export const subscribeToUserSettings = (
     }
   });
 };
+
+/**
+ * Check if a username is available in the `usernames` collection.
+ */
+export async function isUsernameAvailable(username: string): Promise<boolean> {
+  const docRef = doc(db, 'usernames', username);
+  const snap = await getDoc(docRef);
+  return !snap.exists();
+}
+
+/**
+ * Atomically claim a username. Uses a Firestore transaction to prevent race conditions.
+ * Returns true if claimed, false if already taken or on error.
+ */
+export async function claimUsername(username: string, uuid: string): Promise<boolean> {
+  try {
+    const docRef = doc(db, 'usernames', username);
+    await runTransaction(db, async (transaction) => {
+      const snap = await transaction.get(docRef);
+      if (snap.exists()) throw new Error('already-taken');
+      transaction.set(docRef, { uuid, createdAt: Date.now() });
+    });
+    return true;
+  } catch (error) {
+    console.error('Error claiming username:', error);
+    return false;
+  }
+}
+
+/**
+ * Release a previously claimed username.
+ */
+export async function releaseUsername(username: string): Promise<void> {
+  try {
+    const docRef = doc(db, 'usernames', username);
+    await deleteDoc(docRef);
+  } catch (error) {
+    console.error('Error releasing username:', error);
+  }
+}
+
+/**
+ * Look up a username and return the associated UUID, or null if not found.
+ */
+export async function lookupUsername(username: string): Promise<string | null> {
+  try {
+    const docRef = doc(db, 'usernames', username);
+    const snap = await getDoc(docRef);
+    if (snap.exists()) {
+      return (snap.data() as { uuid: string }).uuid;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error looking up username:', error);
+    return null;
+  }
+}
 
 // Global sync state management
 export type SyncStatus = 'synced' | 'syncing' | 'error' | 'offline';

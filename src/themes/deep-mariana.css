@@ -1,0 +1,29 @@
+/* ── Deep: Mariana (dark-only) ──────────────────────────────── */
+
+.theme-deep-mariana {
+  --bg-primary: #030b12;
+  --bg-card: #071520;
+  --bg-surface: #0c1f2e;
+  --bg-hover: #0f2838;
+  --text-primary: #8cb4c8;
+  --text-heading: #b8dae8;
+  --text-muted: #4a7a90;
+  --text-subtle: #2a4f62;
+  --accent: #00e89a;
+  --accent-dim: #00b878;
+  --accent-secondary: #7b5ea7;
+  --accent-glow: rgba(0, 232, 154, 0.3);
+  --border-color: #0c2535;
+  --border-subtle: #132d40;
+  --font-theme-display: 'Syne', ui-sans-serif, system-ui, sans-serif;
+  --font-theme-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* ── Background Pattern ───────────────────────────────────── */
+
+.theme-deep-mariana .bg-topo {
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(0, 232, 154, 0.03) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 30%, rgba(123, 94, 167, 0.03) 0%, transparent 50%),
+    linear-gradient(180deg, transparent 0%, rgba(0, 232, 154, 0.02) 100%);
+}

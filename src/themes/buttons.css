@@ -1,0 +1,86 @@
+/* ═══════════════════════════════════════════════════════════════
+   Theme-Aware Button System
+   Buttons use .btn-uniform for subdued rest state, glow on click.
+   Per-theme glow colors defined via --btn-up-shadow vars (used by
+   the click-glow animation). --accent-glow provides the base color.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Default glow vars (themes override for click animation) ── */
+
+:root {
+  --btn-up-shadow: 0 4px 12px var(--accent-glow), 0 1px 3px rgba(0,0,0,0.2);
+  --btn-up-hover-shadow: 0 6px 20px var(--accent-glow), 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* ── Uniform Button (both UP and DOWN) ────────────────────── */
+
+.btn-uniform {
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-subtle);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.btn-uniform:hover {
+  border-color: var(--accent-dim);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent-glow) 40%, transparent);
+  color: var(--accent);
+}
+
+.btn-uniform:active {
+  transform: scale(0.93);
+}
+
+/* ── Click Glow Pulse ─────────────────────────────────────── */
+
+@keyframes click-glow {
+  0% {
+    box-shadow: 0 0 0 0 var(--accent-glow), var(--btn-up-shadow);
+  }
+  30% {
+    box-shadow: 0 0 28px 12px var(--accent-glow), var(--btn-up-hover-shadow);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent, 0 2px 6px rgba(0,0,0,0.2);
+  }
+}
+
+.btn-click-glow {
+  animation: click-glow 0.5s ease-out;
+}
+
+/* ── Per-theme glow overrides ─────────────────────────────── */
+
+.theme-summit-instrument {
+  --btn-up-shadow: 0 1px 0 0 rgba(255,255,255,0.15) inset, 0 4px 12px rgba(217,119,6,0.3), 0 1px 3px rgba(0,0,0,0.2);
+  --btn-up-hover-shadow: 0 1px 0 0 rgba(255,255,255,0.2) inset, 0 6px 20px rgba(217,119,6,0.4), 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.theme-deep-mariana {
+  --btn-up-shadow: 0 0 16px rgba(0,232,154,0.3), 0 4px 12px rgba(0,232,154,0.15);
+  --btn-up-hover-shadow: 0 0 24px rgba(0,232,154,0.4), 0 6px 16px rgba(0,232,154,0.2);
+}
+
+.theme-night-city-apartment {
+  --btn-up-shadow: 0 0 16px rgba(255,184,3,0.3), 0 4px 12px rgba(255,184,3,0.15);
+  --btn-up-hover-shadow: 0 0 24px rgba(255,184,3,0.4), 0 6px 16px rgba(255,184,3,0.25);
+}
+
+.theme-industrial-furnace {
+  --btn-up-shadow: 0 0 20px rgba(255,104,32,0.35), 0 4px 12px rgba(255,104,32,0.2);
+  --btn-up-hover-shadow: 0 0 30px rgba(255,104,32,0.5), 0 6px 16px rgba(255,104,32,0.3);
+}
+
+.theme-corporate-glass {
+  --btn-up-shadow: 0 4px 16px rgba(0,112,192,0.2), 0 1px 3px rgba(0,0,0,0.1);
+  --btn-up-hover-shadow: 0 6px 24px rgba(0,112,192,0.3), 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* ── Reduced motion ───────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-click-glow {
+    animation: none;
+  }
+}

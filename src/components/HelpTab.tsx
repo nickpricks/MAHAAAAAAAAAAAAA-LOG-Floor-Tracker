@@ -1,15 +1,15 @@
 import Markdown from 'react-markdown';
 import { Github, MessageCircle } from 'lucide-react';
-import readmeContent from '../../README.md?raw';
+import helpContent from '../../HELP.md?raw';
 import { APP_NAME, APP_VERSION } from '@/constants';
 
 export default function HelpTab() {
   return (
     <div className="w-full max-w-2xl flex flex-col gap-6">
-      <div className="bg-white dark:bg-zinc-900 p-8 md:p-12 rounded-[2rem] shadow-sm border border-zinc-200 dark:border-zinc-800">
+      <div className="bg-surface-card p-8 md:p-12 rounded-[2rem] shadow-sm border border-line">
         <div className="markdown-body">
-          <Markdown>{readmeContent}</Markdown>
-          <div className="mt-8 pt-8 border-t border-zinc-100 dark:border-zinc-800 flex justify-between items-center text-zinc-400 dark:text-zinc-500 font-mono text-[10px] uppercase tracking-widest">
+          <Markdown>{helpContent}</Markdown>
+          <div className="mt-8 pt-8 border-t border-line-subtle flex justify-between items-center text-fg-subtle font-mono text-[10px] uppercase tracking-widest">
             <span>{APP_NAME}</span>
             <span>{APP_VERSION}</span>
           </div>

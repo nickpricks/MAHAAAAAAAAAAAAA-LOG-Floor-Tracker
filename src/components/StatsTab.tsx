@@ -52,51 +52,51 @@ export default function StatsTab({ records, todayKey, defaultChallengeId, onManu
   const { remainingMeters, progressPercent } = calculateProgress(totalMeters, activeChallenge.meters);
 
   return (
-    <div className="w-full max-w-sm bg-white dark:bg-zinc-900 p-8 rounded-[2rem] shadow-sm border border-zinc-200 dark:border-zinc-800 flex flex-col gap-6">
+    <div className="w-full max-w-sm bg-surface-card p-8 rounded-[2rem] shadow-sm border border-line flex flex-col gap-6">
       <div className="text-center relative">
         <div className="absolute -top-2 -right-2 flex gap-2">
           <button
             onClick={handleManualSync}
             disabled={isSyncing}
-            className={`p-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full text-zinc-400 dark:text-zinc-500 hover:text-blue-500 hover:border-blue-200 transition-all shadow-sm ${isSyncing ? 'animate-spin' : ''}`}
+            className={`p-2 bg-surface-raised border border-line rounded-full text-fg-subtle hover:text-blue-500 hover:border-blue-200 transition-all shadow-sm ${isSyncing ? 'animate-spin' : ''}`}
             title="Sync all data to cloud"
           >
             <RefreshCw size={16} />
           </button>
           <button
             onClick={handleCopyLink}
-            className="p-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full text-zinc-400 dark:text-zinc-500 hover:text-blue-500 hover:border-blue-200 transition-all shadow-sm"
+            className="p-2 bg-surface-raised border border-line rounded-full text-fg-subtle hover:text-blue-500 hover:border-blue-200 transition-all shadow-sm"
             title="Copy shareable link"
           >
             {copied ? <Check size={16} className="text-green-500" /> : <Share2 size={16} />}
           </button>
         </div>
         <div className="text-5xl mb-2">⛰️</div>
-        <h2 className="text-2xl font-display font-extrabold text-zinc-800 dark:text-zinc-100">Leaderboard</h2>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1 font-mono">1 floor ≈ {METERS_PER_FLOOR} meters</p>
+        <h2 className="text-2xl font-display font-extrabold text-fg-heading">Leaderboard</h2>
+        <p className="text-sm text-fg-muted mt-1 font-mono">1 floor ≈ {METERS_PER_FLOOR} meters</p>
       </div>
 
       <div className="flex flex-col gap-4 mt-2">
-        <div className="flex justify-between items-center p-4 bg-zinc-50 dark:bg-zinc-800 rounded-2xl border border-zinc-100 dark:border-zinc-800">
-          <span className="font-bold text-zinc-600 dark:text-zinc-300">Today</span>
-          <span className="text-xl font-bold font-mono text-zinc-800 dark:text-zinc-100 tabular-nums">{formatMeters(todayMeters)} <span className="text-sm text-zinc-400 dark:text-zinc-500 font-bold">m</span></span>
+        <div className="flex justify-between items-center p-4 bg-surface-raised rounded-2xl border border-line-subtle">
+          <span className="font-bold text-fg">Today</span>
+          <span className="text-xl font-bold font-mono text-fg-heading tabular-nums">{formatMeters(todayMeters)} <span className="text-sm text-fg-subtle font-bold">m</span></span>
         </div>
-        <div className="flex justify-between items-center p-4 bg-zinc-50 dark:bg-zinc-800 rounded-2xl border border-zinc-100 dark:border-zinc-800">
-          <span className="font-bold text-zinc-600 dark:text-zinc-300">This Week</span>
-          <span className="text-xl font-bold font-mono text-zinc-800 dark:text-zinc-100 tabular-nums">{formatMeters(weekMeters)} <span className="text-sm text-zinc-400 dark:text-zinc-500 font-bold">m</span></span>
+        <div className="flex justify-between items-center p-4 bg-surface-raised rounded-2xl border border-line-subtle">
+          <span className="font-bold text-fg">This Week</span>
+          <span className="text-xl font-bold font-mono text-fg-heading tabular-nums">{formatMeters(weekMeters)} <span className="text-sm text-fg-subtle font-bold">m</span></span>
         </div>
-        <div className="flex justify-between items-center p-4 bg-zinc-50 dark:bg-zinc-800 rounded-2xl border border-zinc-100 dark:border-zinc-800">
-          <span className="font-bold text-zinc-600 dark:text-zinc-300">This Month</span>
-          <span className="text-xl font-bold font-mono text-zinc-800 dark:text-zinc-100 tabular-nums">{formatMeters(monthMeters)} <span className="text-sm text-zinc-400 dark:text-zinc-500 font-bold">m</span></span>
+        <div className="flex justify-between items-center p-4 bg-surface-raised rounded-2xl border border-line-subtle">
+          <span className="font-bold text-fg">This Month</span>
+          <span className="text-xl font-bold font-mono text-fg-heading tabular-nums">{formatMeters(monthMeters)} <span className="text-sm text-fg-subtle font-bold">m</span></span>
         </div>
       </div>
 
-      <div className="mt-4 pt-6 border-t border-zinc-100 dark:border-zinc-800 relative">
+      <div className="mt-4 pt-6 border-t border-line-subtle relative">
         <div className="flex justify-between items-center mb-4">
           <select
             value={challengeId}
             onChange={(e) => setChallengeId(e.target.value)}
-            className="bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-800 dark:text-zinc-100 text-sm font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 cursor-pointer shadow-sm pr-8"
+            className="bg-surface-raised border border-line text-fg text-sm font-bold rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 cursor-pointer shadow-sm pr-8"
           >
             {
               CHALLENGES.map(c => (
@@ -106,23 +106,23 @@ export default function StatsTab({ records, todayKey, defaultChallengeId, onManu
           </select>
           <button
             onClick={() => setShowInfo(true)}
-            className="text-zinc-400 hover:text-blue-500 transition-colors p-1"
+            className="text-fg-subtle hover:text-blue-500 transition-colors p-1"
           >
             <Info size={20} />
           </button>
         </div>
 
         <div className="flex justify-between items-end mb-2">
-          <span className="font-bold text-zinc-500 dark:text-zinc-400 text-sm">Progress</span>
+          <span className="font-bold text-fg-muted text-sm">Progress</span>
           <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-bold font-mono text-amber-600 dark:text-amber-400 tracking-tighter">{progressPercent.toFixed(1)}%</span>
-            <span className="text-sm font-bold text-zinc-400 dark:text-zinc-500 tabular-nums">({formatMeters(totalMeters)} / {formatMeters(activeChallenge.meters)} m)</span>
+            <span className="text-3xl font-bold font-mono text-accent tracking-tighter">{progressPercent.toFixed(1)}%</span>
+            <span className="text-sm font-bold text-fg-subtle tabular-nums">({formatMeters(totalMeters)} / {formatMeters(activeChallenge.meters)} m)</span>
           </div>
         </div>
 
-        <div className="w-full bg-zinc-100 dark:bg-zinc-800 rounded-full h-6 mb-3 overflow-hidden shadow-inner border border-zinc-200/50 dark:border-zinc-700/50">
+        <div className="w-full bg-surface-raised rounded-full h-6 mb-3 overflow-hidden shadow-inner border border-line/50">
           <div
-            className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 h-6 rounded-full transition-all duration-1000 ease-out flex items-center justify-end px-2"
+            className="bg-gradient-to-r from-accent via-accent to-accent h-6 rounded-full transition-all duration-1000 ease-out flex items-center justify-end px-2"
             style={{ width: `${Math.max(5, progressPercent)}%` }}
           >
             {
@@ -132,7 +132,7 @@ export default function StatsTab({ records, todayKey, defaultChallengeId, onManu
           </div>
         </div>
 
-        <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 text-center mt-4">
+        <p className="text-sm font-medium text-fg-muted text-center mt-4">
           {
             remainingMeters > 0
               ? `${formatMeters(remainingMeters)} m remaining to summit!`
@@ -144,15 +144,15 @@ export default function StatsTab({ records, todayKey, defaultChallengeId, onManu
       {/* Info Modal */}
       {
         showInfo && (
-          <div className="absolute inset-0 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm z-10 rounded-[2rem] p-8 flex flex-col justify-center animate-in fade-in zoom-in-95 duration-200">
+          <div className="absolute inset-0 bg-surface-card/90 backdrop-blur-sm z-10 rounded-[2rem] p-8 flex flex-col justify-center animate-in fade-in zoom-in-95 duration-200">
             <button
               onClick={() => setShowInfo(false)}
-              className="absolute top-6 right-6 text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 p-2 bg-zinc-100 dark:bg-zinc-800 rounded-full transition-colors"
+              className="absolute top-6 right-6 text-fg-subtle hover:text-fg p-2 bg-surface-raised rounded-full transition-colors"
             >
               <X size={20} />
             </button>
 
-            <h3 className="text-2xl font-black text-zinc-800 dark:text-zinc-100 mb-6 text-center">Fun Facts 💡</h3>
+            <h3 className="text-2xl font-black text-fg-heading mb-6 text-center">Fun Facts 💡</h3>
 
             <div className="flex flex-col gap-4">
               <div className="bg-orange-50 p-4 rounded-xl border border-orange-100 flex items-center gap-4">
