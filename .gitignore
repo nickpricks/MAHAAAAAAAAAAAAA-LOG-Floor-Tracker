@@ -36,3 +36,9 @@ coverage
 # Environment variables
 .env*
 !.env.example
+
+# Superpowers
+.superpowers/
+
+# Worktrees
+.worktrees/
