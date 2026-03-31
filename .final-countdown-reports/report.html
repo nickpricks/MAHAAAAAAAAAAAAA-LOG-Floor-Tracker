@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 5 Code Review Dashboard</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0f; color: #c0c0c8; line-height: 1.6; padding: 2rem; }
+  h1 { font-size: 1.5rem; color: #e0e0e8; margin-bottom: 0.5rem; }
+  .subtitle { color: #666; font-size: 0.875rem; margin-bottom: 2rem; }
+  .filters { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .filter-btn { padding: 0.4rem 1rem; border: 1px solid #1e1e3a; background: #12121f; color: #888; border-radius: 2rem; cursor: pointer; font-size: 0.8rem; transition: all 0.2s; }
+  .filter-btn:hover { border-color: #444; color: #ccc; }
+  .filter-btn.active { border-color: #00f0ff; color: #00f0ff; background: rgba(0,240,255,0.08); }
+  .filter-btn.critical.active { border-color: #ff4444; color: #ff4444; background: rgba(255,68,68,0.08); }
+  .filter-btn.high.active { border-color: #ff8800; color: #ff8800; background: rgba(255,136,0,0.08); }
+  .filter-btn.medium.active { border-color: #ffcc00; color: #ffcc00; background: rgba(255,204,0,0.08); }
+  .filter-btn.low.active { border-color: #44cc44; color: #44cc44; background: rgba(68,204,68,0.08); }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+  .stat { background: #12121f; border: 1px solid #1e1e3a; border-radius: 0.75rem; padding: 1rem; text-align: center; }
+  .stat-num { font-size: 2rem; font-weight: 800; }
+  .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: #666; }
+  .stat.critical .stat-num { color: #ff4444; }
+  .stat.high .stat-num { color: #ff8800; }
+  .stat.medium .stat-num { color: #ffcc00; }
+  .stat.low .stat-num { color: #44cc44; }
+  .issue { background: #12121f; border: 1px solid #1e1e3a; border-radius: 0.75rem; margin-bottom: 0.75rem; overflow: hidden; }
+  .issue-header { padding: 1rem 1.25rem; cursor: pointer; display: flex; align-items: center; gap: 0.75rem; }
+  .issue-header:hover { background: rgba(255,255,255,0.02); }
+  .badge { padding: 0.15rem 0.5rem; border-radius: 1rem; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+  .badge.critical { background: rgba(255,68,68,0.15); color: #ff4444; border: 1px solid rgba(255,68,68,0.3); }
+  .badge.high { background: rgba(255,136,0,0.15); color: #ff8800; border: 1px solid rgba(255,136,0,0.3); }
+  .badge.medium { background: rgba(255,204,0,0.15); color: #ffcc00; border: 1px solid rgba(255,204,0,0.3); }
+  .badge.low { background: rgba(68,204,68,0.15); color: #44cc44; border: 1px solid rgba(68,204,68,0.3); }
+  .issue-title { flex: 1; font-weight: 600; font-size: 0.9rem; }
+  .agents { font-size: 0.7rem; color: #555; }
+  .issue-body { padding: 0 1.25rem 1.25rem; display: none; border-top: 1px solid #1e1e3a; padding-top: 1rem; }
+  .issue.open .issue-body { display: block; }
+  .issue-body p { margin-bottom: 0.75rem; font-size: 0.85rem; }
+  .file { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #00f0ff; }
+  code { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; background: #0a0a0f; padding: 0.15rem 0.4rem; border-radius: 0.25rem; }
+  pre { background: #0a0a0f; border: 1px solid #1e1e3a; border-radius: 0.5rem; padding: 1rem; overflow-x: auto; margin: 0.75rem 0; font-size: 0.8rem; }
+  pre code { background: none; padding: 0; }
+  .chevron { transition: transform 0.2s; color: #444; }
+  .issue.open .chevron { transform: rotate(90deg); }
+  .positive { background: #0a1a0f; border-color: #1a3a1e; }
+  .positive .stat-num { color: #44cc44; }
+  h2 { font-size: 1.1rem; color: #888; margin: 2rem 0 1rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<h1>Phase 5 Code Review Dashboard</h1>
+<p class="subtitle">Commit 5ef485e — 41 files, 4,879 additions — 5 agents, 27 findings</p>
+
+<div class="stats">
+  <div class="stat critical"><div class="stat-num">3</div><div class="stat-label">Critical</div></div>
+  <div class="stat high"><div class="stat-num">8</div><div class="stat-label">High</div></div>
+  <div class="stat medium"><div class="stat-num">9</div><div class="stat-label">Medium</div></div>
+  <div class="stat low"><div class="stat-num">7</div><div class="stat-label">Low</div></div>
+</div>
+
+<div class="filters">
+  <button class="filter-btn active" onclick="filter('all')">All (27)</button>
+  <button class="filter-btn critical" onclick="filter('critical')">Critical (3)</button>
+  <button class="filter-btn high" onclick="filter('high')">High (8)</button>
+  <button class="filter-btn medium" onclick="filter('medium')">Medium (9)</button>
+  <button class="filter-btn low" onclick="filter('low')">Low (7)</button>
+</div>
+
+<div id="issues">
+
+<!-- CRITICAL -->
+<div class="issue" data-severity="critical">
+  <div class="issue-header" onclick="toggle(this)">
+    <span class="chevron">&#9654;</span>
+    <span class="badge critical">Critical</span>
+    <span class="issue-title">Username claim race condition (TOCTOU)</span>
+    <span class="agents">All 5 agents</span>
+  </div>
+  <div class="issue-body">
+    <p class="file">firebase.ts:144-162 &middot; UsernamePopup.tsx:27-38 &middot; ProfileTab.tsx:40-57</p>
+    <p><code>isUsernameAvailable()</code> then <code>claimUsername()</code> is check-then-act without atomicity. Between the two Firestore calls, another user can claim the same name. <code>setDoc</code> overwrites silently.</p>
+    <p><strong>Fix:</strong> Use <code>runTransaction</code> for atomic check-and-set.</p>
+  </div>
+</div>
+
+<div class="issue" data-severity="critical">
+  <div class="issue-header" onclick="toggle(this)">
+    <span class="chevron">&#9654;</span>
+    <span class="badge critical">Critical</span>
+    <span class="issue-title">Release-before-claim loses old username on failure</span>
+    <span class="agents">4 agents</span>
+  </div>
+  <div class="issue-body">
+    <p class="file">ProfileTab.tsx:48-57</p>
+    <p><code>releaseUsername(old)</code> runs before <code>claimUsername(new)</code>. If claim fails, user has no username and old name is up for grabs.</p>
+    <p><strong>Fix:</strong> Claim new first, release old only after success.</p>
+  </div>
+</div>
+
+<div class="issue" data-severity="critical">
+  <div class="issue-header" onclick="toggle(this)">
+    <span class="chevron">&#9654;</span>
+    <span class="badge critical">Critical</span>
+    <span class="issue-title">Firestore rules allow any user to delete any username</span>
+    <span class="agents">Code Reviewer, march-in</span>
+  </div>
+  <div class="issue-body">
+    <p class="file">firestore.rules:16-22</p>
+    <p>Any anonymous user can delete any other user's username mapping. Username squatting and denial-of-service vector.</p>
+    <p><strong>Fix:</strong> Add <code>authUid</code> field to username docs and enforce on delete, or restrict until UID migration.</p>
+  </div>
+</div>
+
+<!-- HIGH -->
+<div class="issue" data-severity="high">
+  <div class="issue-header" onclick="toggle(this)">
+    <span class="chevron">&#9654;</span>
+    <span class="badge high">High</span>
+    <span class="issue-title">Theme preview URLs create real Firebase subscriptions</span>
+    <span class="agents">3 agents</span>
+  </div>
+  <div class="issue-body">
+    <p class="file">App.tsx:41-46</p>
+    <p><code>resolvedUuid = 'theme-preview-...'</code> is passed to <code>useAppInitialization</code>, opening real Firestore listeners and potentially writing data.</p>
+    <p><strong>Fix:</strong> Pass <code>undefined</code> when <code>themePreview</code> is set.</p>
+  </div>
+</div>
+
+<div class="issue" data-severity="high">
+  <div class="issue-header" onclick="toggle(this)">
+    <span class="chevron">&#9654;</span>
+    <span class="badge high">High</span>
+    <span class="issue-title">localStorage stores theme IDs as usernames</span>
+    <span class="agents">Code Reviewer, march-in</span>
+  </div>
+  <div class="issue-body">
+    <p class="file">App.tsx:60-63</p>
+    <p>Visiting <code>/deep-mariana</code> stores it as <code>maha_username</code>, permanently redirecting user to theme preview mode.</p>
+    <p><strong>Fix:</strong> Add <code>&amp;&amp; !isValidThemeId(identifier)</code> to the guard.</p>
+  </div>
+</div>
+
+<div class="issue" data-severity="high">
+  <div class="issue-header" onclick="toggle(this)">
+    <span class="chevron">&#9654;</span>
+    <span class="badge high">High</span>
+    <span class="issue-title">Night City Apartment preview colors mismatch</span>
+    <span class="agents">march-in, Comment Analyzer</span>
+  </div>
+  <div class="issue-body">
+    <p class="file">themes.ts:50</p>
+    <p>Preview shows lavender purple <code>#e8a0ff</code> but CSS has warning gold <code>#ffb803</code>. Background also wrong.</p>
+    <p><strong>Fix:</strong> Update to <code>{ bg: '#0d0505', accent: '#ffb803', text: '#d0d0d0' }</code>.</p>
+  </div>
+</div>
+
+<div class="issue" data-severity="high">
+  <div class="issue-header" onclick="toggle(this)">
+    <span class="chevron">&#9654;</span>
+    <span class="badge high">High</span>
+    <span class="issue-title">saveUserSettings silently swallows all errors</span>
+    <span class="agents">Silent Failure Hunter</span>
+  </div>
+  <div class="issue-body">
+    <p class="file">firebase.ts:119-127</p>
+    <p>Returns void, logs error, continues. Every caller assumes success. Settings changes vanish on reload with no user feedback.</p>
+  </div>
+</div>
+
+<div class="issue" data-severity="high">
+  <div class="issue-header" onclick="toggle(this)">
+    <span class="chevron">&#9654;</span>
+    <span class="badge high">High</span>
+    <span class="issue-title">lookupUsername returns null for both "not found" and "error"</span>
+    <span class="agents">Silent Failure Hunter</span>
+  </div>
+  <div class="issue-body">
+    <p class="file">firebase.ts:179-191 &middot; App.tsx:49-56</p>
+    <p>Network errors redirect users to <code>/</code> (new anonymous session) instead of showing an error screen.</p>
+  </div>
+</div>
+
+<div class="issue" data-severity="high">
+  <div class="issue-header" onclick="toggle(this)">
+    <span class="chevron">&#9654;</span>
+    <span class="badge high">High</span>
+    <span class="issue-title">No tests for Firebase username functions</span>
+    <span class="agents">march-in</span>
+  </div>
+  <div class="issue-body">
+    <p class="file">firebase.ts</p>
+    <p>4 new exported functions ship untested. Existing test infra already mocks Firebase.</p>
+  </div>
+</div>
+
+<div class="issue" data-severity="high">
+  <div class="issue-header" onclick="toggle(this)">
+    <span class="chevron">&#9654;</span>
+    <span class="badge high">High</span>
+    <span class="issue-title">CLAUDE.md and README.md reference non-existent test:design script</span>
+    <span class="agents">Comment Analyzer, mohit-sharma</span>
+  </div>
+  <div class="issue-body">
+    <p class="file">CLAUDE.md:86 &middot; README.md:67</p>
+    <p>Script was removed. Should reference <code>test:themes</code> instead.</p>
+  </div>
+</div>
+
+<div class="issue" data-severity="high">
+  <div class="issue-header" onclick="toggle(this)">
+    <span class="chevron">&#9654;</span>
+    <span class="badge high">High</span>
+    <span class="issue-title">Dead .btn-brass CSS + dead --btn-up-bg variables</span>
+    <span class="agents">march-in</span>
+  </div>
+  <div class="issue-body">
+    <p class="file">summit-instrument.css:53-75 &middot; buttons.css:9-16, 65-106</p>
+    <p><code>.btn-brass</code> (23 lines) is unreferenced. <code>--btn-up-bg</code>/<code>--btn-down-bg</code> vars defined per-theme but never consumed by any CSS rule.</p>
+  </div>
+</div>
+
+<!-- MEDIUM (summarized) -->
+<div class="issue" data-severity="medium">
+  <div class="issue-header" onclick="toggle(this)">
+    <span class="chevron">&#9654;</span>
+    <span class="badge medium">Medium</span>
+    <span class="issue-title">9 medium issues (click to expand)</span>
+    <span class="agents">Multiple agents</span>
+  </div>
+  <div class="issue-body">
+    <p>12. <code>handleSkip</code> silently drops user with no error on 3 failed auto-names</p>
+    <p>13. Settings migration write failure creates infinite retry loop</p>
+    <p>14. Route resolver <code>.then()</code> has no <code>.catch()</code> — infinite spinner on error</p>
+    <p>15. <code>useActiveThemeId</code> uses MutationObserver for a value React already knows</p>
+    <p>16. <code>generateAutoUsername</code> collision space is only 65K</p>
+    <p>17. E2E test uses non-deterministic random values</p>
+    <p>18. Playwright config missing <code>webServer</code> auto-start</p>
+    <p>19. HELP.md lists Apartment as future but it's already built</p>
+    <p>20. WORKPLAN Phase 5 tasks still unchecked</p>
+  </div>
+</div>
+
+<!-- LOW (summarized) -->
+<div class="issue" data-severity="low">
+  <div class="issue-header" onclick="toggle(this)">
+    <span class="chevron">&#9654;</span>
+    <span class="badge low">Low</span>
+    <span class="issue-title">7 low issues (click to expand)</span>
+    <span class="agents">Various</span>
+  </div>
+  <div class="issue-body">
+    <p>21. <code>App</code> reads localStorage during render without try-catch</p>
+    <p>22. Version string hardcoded in ProfileTab instead of APP_VERSION</p>
+    <p>23. NavigationTabs sync indicators still use hardcoded colors</p>
+    <p>24. StatsTab Fun Facts modal uses light-mode-only colors</p>
+    <p>25. <code>ThemeDefinition.fonts</code> field is never used at runtime</p>
+    <p>26. Theme preview always forces dark mode — not documented</p>
+    <p>27. Makefile has duplicate description line</p>
+  </div>
+</div>
+
+</div>
+
+<h2>Agent Agreement</h2>
+<div class="issue positive">
+  <div class="issue-header">
+    <span class="badge" style="background:rgba(68,204,68,0.15);color:#44cc44;border:1px solid rgba(68,204,68,0.3)">Consensus</span>
+    <span class="issue-title">All 5 agents praised the CSS token architecture, settings migration, accessibility (prefers-reduced-motion), and CLAUDE.md documentation quality.</span>
+  </div>
+</div>
+
+<script>
+function toggle(header) {
+  header.parentElement.classList.toggle('open');
+}
+function filter(severity) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  if (severity === 'all') {
+    document.querySelector('.filter-btn').classList.add('active');
+    document.querySelectorAll('.issue').forEach(i => i.style.display = '');
+  } else {
+    document.querySelectorAll(`.filter-btn.${severity}`).forEach(b => b.classList.add('active'));
+    document.querySelectorAll('.issue').forEach(i => {
+      i.style.display = i.dataset.severity === severity ? '' : 'none';
+    });
+  }
+}
+</script>
+</body>
+</html>

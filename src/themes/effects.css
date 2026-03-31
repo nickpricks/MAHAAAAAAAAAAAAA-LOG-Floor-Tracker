@@ -1,0 +1,134 @@
+/* ═══════════════════════════════════════════════════════════════
+   Ambient Effects — Subtle CSS-only atmospheric particles
+   Max ~12 particles, pointer-events: none, prefers-reduced-motion respected
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Deep Mariana: Rising bubbles ─────────────────────────── */
+
+@keyframes bubble-rise {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(20px);
+    opacity: 0;
+  }
+}
+
+.theme-deep-mariana .fx-ambient::before,
+.theme-deep-mariana .fx-ambient::after {
+  content: '';
+  position: fixed;
+  bottom: -10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,232,154,0.3) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.theme-deep-mariana .fx-ambient::before {
+  width: 6px;
+  height: 6px;
+  left: 25%;
+  animation: bubble-rise 8s ease-in infinite;
+}
+
+.theme-deep-mariana .fx-ambient::after {
+  width: 4px;
+  height: 4px;
+  left: 65%;
+  animation: bubble-rise 11s ease-in 3s infinite;
+}
+
+/* ── Industrial Furnace: Rising embers ────────────────────── */
+
+@keyframes ember-rise {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(-15px);
+    opacity: 0;
+  }
+}
+
+.theme-industrial-furnace .fx-ambient::before,
+.theme-industrial-furnace .fx-ambient::after {
+  content: '';
+  position: fixed;
+  bottom: -5px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.theme-industrial-furnace .fx-ambient::before {
+  width: 3px;
+  height: 3px;
+  left: 30%;
+  background: #ff6820;
+  animation: ember-rise 6s ease-out infinite;
+}
+
+.theme-industrial-furnace .fx-ambient::after {
+  width: 2px;
+  height: 2px;
+  left: 70%;
+  background: #ffaa30;
+  animation: ember-rise 9s ease-out 2s infinite;
+}
+
+/* ── Night City Apartment: Scanline sweep ─────────────────── */
+
+@keyframes scanline-sweep {
+  0% {
+    top: -2px;
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.15;
+  }
+  95% {
+    opacity: 0.05;
+  }
+  100% {
+    top: 100vh;
+    opacity: 0;
+  }
+}
+
+.theme-night-city-apartment .fx-ambient::before {
+  content: '';
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255,184,3,0.3), transparent);
+  pointer-events: none;
+  z-index: 0;
+  animation: scanline-sweep 4s linear infinite;
+}
+
+/* ── Reduced motion: disable all effects ──────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-ambient::before,
+  .fx-ambient::after {
+    animation: none !important;
+    display: none;
+  }
+}

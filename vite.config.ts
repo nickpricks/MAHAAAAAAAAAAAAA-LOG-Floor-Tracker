@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
       VitePWA({
         registerType: 'prompt',
-        devOptions: { enabled: true },
+        devOptions: { enabled: false },
         manifest: {
           name: env.VITE_APP_NAME,
           short_name: env.VITE_APP_NAME,

@@ -1,11 +1,46 @@
 @import "tailwindcss";
+@import "./themes/summit-instrument.css";
+@import "./themes/night-city-elevator.css";
+@import "./themes/deep-mariana.css";
+@import "./themes/night-city-apartment.css";
+@import "./themes/industrial-furnace.css";
+@import "./themes/corporate-glass.css";
+@import "./themes/buttons.css";
+@import "./themes/effects.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* ── Summit Instrument Design System ──────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   Tailwind v4 @theme — Semantic Token Mappings
+   ═══════════════════════════════════════════════════════════════ */
 
 @theme {
-  /* Warm stone palette — replaces default cold zinc */
+  /* Semantic surface colors */
+  --color-surface: var(--bg-primary);
+  --color-surface-card: var(--bg-card);
+  --color-surface-raised: var(--bg-surface);
+  --color-surface-hover: var(--bg-hover);
+
+  /* Semantic foreground (text) colors */
+  --color-fg: var(--text-primary);
+  --color-fg-heading: var(--text-heading);
+  --color-fg-muted: var(--text-muted);
+  --color-fg-subtle: var(--text-subtle);
+
+  /* Accent colors */
+  --color-accent: var(--accent);
+  --color-accent-dim: var(--accent-dim);
+  --color-accent-secondary: var(--accent-secondary);
+
+  /* Border colors */
+  --color-line: var(--border-color);
+  --color-line-subtle: var(--border-subtle);
+
+  /* Theme-aware fonts */
+  --font-display: var(--font-theme-display);
+  --font-mono: var(--font-theme-mono);
+
+  /* Keep zinc overrides for non-themed contexts (dev panel, etc.) */
   --color-zinc-50:  #faf7f2;
   --color-zinc-100: #f0ebe1;
   --color-zinc-200: #e0d8ca;
@@ -18,14 +53,10 @@
   --color-zinc-900: #1a1613;
   --color-zinc-950: #0c0a09;
 
-  /* Amber summit accent */
+  /* Amber accent (kept for non-themed contexts) */
   --color-amber-400: #fbbf24;
   --color-amber-500: #f59e0b;
   --color-amber-600: #d97706;
-
-  /* Typography */
-  --font-display: 'Syne', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
   /* Animations */
   --animate-spin-slow: spin 3s linear infinite;
@@ -42,70 +73,30 @@
   50% { opacity: 0.8; }
 }
 
-/* ── Topographic Background Pattern ───────────────────────────── */
+/* ── Theme-Aware Utility Classes ──────────────────────────────── */
 
-.bg-topo {
-  background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='topo' width='200' height='200' patternUnits='userSpaceOnUse'%3E%3Cpath d='M100 20 Q130 40 120 80 Q110 100 140 120 Q170 140 150 170 Q130 200 100 180 Q70 160 60 130 Q50 100 80 80 Q100 60 100 20Z' fill='none' stroke='%23a6997f' stroke-width='0.5' opacity='0.08'/%3E%3Cpath d='M40 10 Q60 30 50 60 Q40 80 70 100 Q100 120 80 150 Q60 180 30 160 Q0 140 10 110 Q20 80 0 60 Q-10 40 40 10Z' fill='none' stroke='%23a6997f' stroke-width='0.5' opacity='0.06'/%3E%3Cpath d='M160 0 Q190 20 180 50 Q170 70 190 90 Q210 110 190 140 Q170 170 150 150 Q130 130 140 100 Q150 70 130 50 Q120 30 160 0Z' fill='none' stroke='%23a6997f' stroke-width='0.5' opacity='0.05'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='200' height='200' fill='url(%23topo)'/%3E%3C/svg%3E");
-}
-
-.dark .bg-topo {
-  background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='topo' width='200' height='200' patternUnits='userSpaceOnUse'%3E%3Cpath d='M100 20 Q130 40 120 80 Q110 100 140 120 Q170 140 150 170 Q130 200 100 180 Q70 160 60 130 Q50 100 80 80 Q100 60 100 20Z' fill='none' stroke='%23453d36' stroke-width='0.5' opacity='0.3'/%3E%3Cpath d='M40 10 Q60 30 50 60 Q40 80 70 100 Q100 120 80 150 Q60 180 30 160 Q0 140 10 110 Q20 80 0 60 Q-10 40 40 10Z' fill='none' stroke='%23453d36' stroke-width='0.5' opacity='0.2'/%3E%3Cpath d='M160 0 Q190 20 180 50 Q170 70 190 90 Q210 110 190 140 Q170 170 150 150 Q130 130 140 100 Q150 70 130 50 Q120 30 160 0Z' fill='none' stroke='%23453d36' stroke-width='0.5' opacity='0.15'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='200' height='200' fill='url(%23topo)'/%3E%3C/svg%3E");
-}
-
-/* ── Counter Altitude Readout ─────────────────────────────────── */
-
-.font-display { font-family: var(--font-display); }
-.font-mono    { font-family: var(--font-mono); }
+.font-display { font-family: var(--font-theme-display); }
+.font-mono    { font-family: var(--font-theme-mono); }
 
 .altitude-readout {
-  font-family: var(--font-mono);
+  font-family: var(--font-theme-mono);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.03em;
 }
 
 .altitude-glow {
-  text-shadow: 0 0 40px rgba(245, 158, 11, 0.3), 0 0 80px rgba(245, 158, 11, 0.1);
-}
-
-.dark .altitude-glow {
-  text-shadow: 0 0 40px rgba(251, 191, 36, 0.4), 0 0 80px rgba(251, 191, 36, 0.15);
-}
-
-/* ── Brass Button Treatment ───────────────────────────────────── */
-
-.btn-brass {
-  background: linear-gradient(145deg, #f59e0b, #d97706);
-  box-shadow:
-    0 1px 0 0 rgba(255,255,255,0.15) inset,
-    0 4px 12px rgba(217, 119, 6, 0.3),
-    0 1px 3px rgba(0,0,0,0.2);
-  transition: all 0.15s ease;
-}
-
-.btn-brass:hover {
-  background: linear-gradient(145deg, #fbbf24, #f59e0b);
-  box-shadow:
-    0 1px 0 0 rgba(255,255,255,0.2) inset,
-    0 6px 20px rgba(217, 119, 6, 0.4),
-    0 2px 6px rgba(0,0,0,0.2);
-}
-
-.btn-brass:active {
-  transform: scale(0.95);
-  box-shadow:
-    0 1px 0 0 rgba(255,255,255,0.1) inset,
-    0 2px 6px rgba(217, 119, 6, 0.3);
+  text-shadow: 0 0 40px var(--accent-glow), 0 0 80px color-mix(in srgb, var(--accent-glow) 33%, transparent);
 }
 
 /* ── Markdown styles ──────────────────────────────────────────── */
 
 @layer utilities {
-  .markdown-body h1 { @apply text-3xl font-black mb-6 text-zinc-900 dark:text-zinc-100; }
-  .markdown-body h2 { @apply text-xl font-bold mt-8 mb-4 text-zinc-800 dark:text-zinc-200; }
-  .markdown-body h3 { @apply text-lg font-bold mt-6 mb-3 text-zinc-800 dark:text-zinc-200; }
-  .markdown-body p { @apply mb-4 text-zinc-600 dark:text-zinc-400 leading-relaxed; }
-  .markdown-body ul { @apply list-disc pl-5 mb-6 text-zinc-600 dark:text-zinc-400 space-y-2; }
+  .markdown-body h1 { @apply text-3xl font-black mb-6 text-fg-heading; }
+  .markdown-body h2 { @apply text-xl font-bold mt-8 mb-4 text-fg-heading; }
+  .markdown-body h3 { @apply text-lg font-bold mt-6 mb-3 text-fg-heading; }
+  .markdown-body p { @apply mb-4 text-fg-muted leading-relaxed; }
+  .markdown-body ul { @apply list-disc pl-5 mb-6 text-fg-muted space-y-2; }
   .markdown-body li { @apply pl-1; }
-  .markdown-body hr { @apply my-8 border-zinc-200 dark:border-zinc-700; }
-  .markdown-body strong { @apply font-bold text-zinc-900 dark:text-zinc-100; }
+  .markdown-body hr { @apply my-8 border-line; }
+  .markdown-body strong { @apply font-bold text-fg; }
 }

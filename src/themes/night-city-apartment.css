@@ -1,0 +1,37 @@
+/* ── Night City: Apartment (dark-only) ─────────────────────── */
+/* Megacity apartment management panel: noir black, warning gold,
+   terminal green status indicators, chrome borders, scanline CRT overlay.
+   Reference: Gemini_Generated_Image_m262cgm262cgm262.png */
+
+.theme-night-city-apartment {
+  --bg-primary: #0d0505;
+  --bg-card: #141010;
+  --bg-surface: #1c1616;
+  --bg-hover: #241e1e;
+  --text-primary: #d0d0d0;
+  --text-heading: #e8e8e8;
+  --text-muted: #707070;
+  --text-subtle: #404040;
+  --accent: #ffb803;
+  --accent-dim: #cc9400;
+  --accent-secondary: #00ff41;
+  --accent-glow: rgba(255, 184, 3, 0.3);
+  --border-color: #2a2020;
+  --border-subtle: #1e1818;
+  --font-theme-display: 'Orbitron', ui-sans-serif, system-ui, sans-serif;
+  --font-theme-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* ── Background: Scanline CRT overlay + noir vignette ─────── */
+
+.theme-night-city-apartment .bg-topo {
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(255,255,255,0.008) 2px,
+      rgba(255,255,255,0.008) 4px
+    ),
+    radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.4) 100%);
+}

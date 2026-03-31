@@ -27,19 +27,19 @@ export default function NavigationTabs({ activeTab, setActiveTab, syncStatus }: 
       case 'offline':
         return <CloudOff className="w-3.5 h-3.5 text-zinc-400" />;
       default:
-        return <Cloud className="w-3.5 h-3.5 text-zinc-300 dark:text-zinc-500" />;
+        return <Cloud className="w-3.5 h-3.5 text-fg-subtle" />;
     }
   };
 
   const tabClass = (tab: TabType) =>
     `px-3 sm:px-5 py-2 rounded-full text-sm font-display font-bold transition-all whitespace-nowrap ${
       activeTab === tab
-        ? 'bg-amber-500 text-zinc-900 shadow-md shadow-amber-500/20'
-        : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+        ? 'bg-accent text-surface shadow-md shadow-accent/20'
+        : 'text-fg-muted hover:text-fg hover:bg-surface-hover'
     }`;
 
   return (
-    <div className="flex items-center gap-1.5 bg-white dark:bg-zinc-900 p-1.5 rounded-full shadow-sm border border-zinc-200 dark:border-zinc-800 mb-8 max-w-full">
+    <div className="flex items-center gap-1.5 bg-surface-card p-1.5 rounded-full shadow-sm border border-line mb-8 max-w-full">
       {/* Sync status indicator — compact dot on mobile, icon on larger screens */}
       <div
         className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center"

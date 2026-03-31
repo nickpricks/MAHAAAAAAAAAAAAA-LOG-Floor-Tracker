@@ -86,16 +86,35 @@ This workplan tracks the resolution of liabilities identified during the `/march
 - [x] 13. **PWA Icons**: SVG favicon (ascending staircase), icon generation utility
 - [x] 14. **Documentation**: Update CLAUDE.md, Audit-TLDR, WORKPLAN
 
-## Mission: Phase 4 - Identity, Security & Analytics - Priority 2
+## Mission: Phase 4 - Security - Priority 2
 
 ### Security
 - [ ] 1. **Deploy Firestore Rules**: Run `firebase deploy --only firestore:rules` (rules are version-controlled in `firestore.rules` but never deployed)
 - [ ] 2. **Firebase UID Migration (F1)**: Switch Firestore doc paths from URL UUID to `request.auth.uid`, enforce `request.auth.uid == userId` in rules. Requires data migration for existing users.
 
-### Identity & Usernames
-- [ ] 3. **Username Selection**: Add optional username field to Profile page (replace raw UUID display). Store in `users/{uuid}/settings/profile` as `username`. Validate uniqueness via a top-level `usernames/{username} → {uuid}` Firestore collection.
-- [ ] 4. **Dual Routing**: Support both `/:uuid` and `/:username` routes. On `/:username`, look up UUID from `usernames` collection, redirect or resolve. Existing UUID links keep working.
-- [ ] 5. **Shareable Profile URLs**: Update "Copy shareable link" to prefer `/:username` when set.
+## Mission: Phase 5 - Identity & Theming - Priority 1
 
-### Analytics
-- [ ] 6. **Dashboard**: Build a simple unified dashboard view for richer analytics.
+> Full spec: [2026-03-30-identity-theming-design.md](2026-03-30-identity-theming-design.md)
+
+### Theming
+- [x] 1. **Theme System Architecture**: CSS custom property tokens per theme, theme class on `<html>`, Tailwind v4 `@theme` integration. `src/utils/themes.ts` + `src/themes/*.css`.
+- [x] 2. **Night City: Elevator Theme**: Cyberpunk design — void black, cyan glow, chrome diamond buttons, Orbitron font, brushed metal texture.
+- [x] 3. **Rewire Summit Instrument**: Refactored to CSS var token system (no visual change).
+- [x] 4. **Theme Picker**: Select dropdown in Profile tab. 6 themes total.
+- [x] 4.1 **Additional Themes**: Deep Mariana, Night City Apartment, Industrial Furnace, Corporate Glass.
+- [x] 4.2 **Per-theme Buttons**: Uniform subdued buttons with click glow, per-theme icons, ambient effects (bubbles, embers, scanlines).
+- [x] 4.3 **Theme Preview URLs**: Visit `/{theme-id}` to preview any theme.
+- [x] 4.4 **Playwright E2E Tests**: `bun run test:themes` for headless, `bun run test:themes:debug` for inspector.
+
+### Identity
+- [x] 5. **First-Launch Username Popup**: Modal after onboarding — optional username + email. Auto-generates `climber-{hex}` if skipped.
+- [x] 6. **Username & Email in Profile**: Editable fields. Username claim uses Firestore transaction (atomic).
+- [x] 7. **Dual Routing**: `/:identifier` resolves as UUID or username. `/` prefers stored username.
+- [x] 8. **Firestore Rules for Usernames**: Read/create/delete for authenticated. Ownership enforcement deferred to UID migration (Phase 4).
+
+### Deferred (Future Phases)
+- [ ] **Shareable Profile URLs**: Update "Copy shareable link" to prefer `/:username` when set.
+- [ ] **Find Your User**: Recovery feature in Profile — search by username or UUID to reconnect to lost account.
+- [ ] **Additional Themes**: Tokyo Midnight, Skyline, Everest, Fuji, Himalayan Dawn, Space Station.
+- [ ] **Challenge Revamp**: Resettable periods, 30 challenges, floor height presets. See `docs/specs/2026-03-31-challenge-revamp-design.md`.
+- [ ] **Analytics Dashboard**: Build a simple unified dashboard view for richer analytics.

@@ -35,8 +35,18 @@ export type TabType = typeof TABS[keyof typeof TABS];
 
 export const DEFAULT_CHALLENGE_ID = 'everest';
 
-export const THEMES = {
+export const COLOR_MODES = {
   LIGHT: 'light',
   DARK: 'dark',
   SYSTEM: 'system',
 } as const;
+
+export type ColorMode = typeof COLOR_MODES[keyof typeof COLOR_MODES];
+
+export const DEFAULT_THEME_ID = 'summit-instrument';
+
+// Username constants
+export const USERNAME_REGEX = /^[a-z0-9][a-z0-9-]{1,18}[a-z0-9]$/;
+export const USERNAME_MIN_LENGTH = 3;
+export const USERNAME_MAX_LENGTH = 20;
+export const USERNAME_AUTO_PREFIX = 'climber-';
