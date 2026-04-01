@@ -1,7 +1,8 @@
 import React from 'react';
 import { User, Moon, Sun, Monitor, Hash, ShieldCheck, Trophy, Palette, AtSign, Edit3, Check, X as XIcon } from 'lucide-react';
-import { APP_NAME, APP_VERSION, CHALLENGES, COLOR_MODES, DEFAULT_THEME_ID, type ColorMode } from '@/constants';
+import { APP_NAME, APP_VERSION, COLOR_MODES, DEFAULT_THEME_ID, type ColorMode } from '@/constants';
 import { UserSettings, isUsernameAvailable, claimUsername, releaseUsername } from '@utils/firebase';
+import { FLOOR_HEIGHT_PRESETS, DEFAULT_FLOOR_HEIGHT } from '@utils/challenges';
 import { THEME_DEFINITIONS, type ThemeId, isValidThemeId, getThemeDefinition } from '@utils/themes';
 import { validateUsername } from '@utils/usernames';
 import { useNavigate } from 'react-router-dom';
@@ -10,13 +11,13 @@ type Props = {
   userId: string | null;
   settings: UserSettings;
   updateSettings: (newSettings: UserSettings) => void;
+  floorHeight: number;
 };
 
-export default function ProfileTab({ userId, settings, updateSettings }: Props) {
+export default function ProfileTab({ userId, settings, updateSettings, floorHeight }: Props) {
   const navigate = useNavigate();
   const currentThemeId: ThemeId = isValidThemeId(settings.theme ?? '') ? settings.theme as ThemeId : DEFAULT_THEME_ID;
   const currentColorMode: ColorMode = settings.colorMode || COLOR_MODES.SYSTEM;
-  const currentChallenge = settings.defaultChallenge || CHALLENGES[4].id;
   const currentTheme = getThemeDefinition(currentThemeId);
 
   const [editingUsername, setEditingUsername] = React.useState(false);
@@ -268,24 +269,32 @@ export default function ProfileTab({ userId, settings, updateSettings }: Props) 
         </section>
       )}
 
-      {/* Default Challenge */}
+      {/* Floor Height */}
       <section>
         <h3 className="text-xs font-bold uppercase tracking-widest text-fg-subtle mb-4 flex items-center gap-2">
-          <Trophy size={14} /> Default Goal
+          <Trophy size={14} /> Floor Height
         </h3>
-        <select
-          value={currentChallenge}
-          onChange={(e) => updateSettings({ defaultChallenge: e.target.value })}
-          className="w-full bg-surface-raised border border-line text-fg text-sm font-bold rounded-xl focus:ring-accent focus:border-accent block p-3 cursor-pointer shadow-sm"
-        >
-          {CHALLENGES.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.emoji} {c.name} ({c.meters}m)
-            </option>
-          ))}
-        </select>
+        <div className="grid grid-cols-3 gap-2">
+          {FLOOR_HEIGHT_PRESETS.map((preset) => {
+            const active = floorHeight === preset.meters;
+            return (
+              <button
+                key={preset.id}
+                onClick={() => updateSettings({ floorHeight: preset.meters })}
+                className={`flex flex-col items-center gap-1 p-3 rounded-xl border transition-all ${
+                  active
+                    ? 'bg-accent border-accent text-surface shadow-md shadow-accent/20'
+                    : 'bg-surface-card border-line text-fg-muted hover:border-line'
+                }`}
+              >
+                <span className="text-sm font-bold">{preset.meters}m</span>
+                <span className="text-[9px] font-medium">{preset.label.split(' ')[0]}</span>
+              </button>
+            );
+          })}
+        </div>
         <p className="text-[10px] text-fg-subtle mt-2 px-1">
-          This challenge will be shown by default on your stats dashboard.
+          Height per floor used for distance calculations.
         </p>
       </section>
 

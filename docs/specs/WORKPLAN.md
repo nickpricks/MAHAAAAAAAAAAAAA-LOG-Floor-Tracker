@@ -112,9 +112,31 @@ This workplan tracks the resolution of liabilities identified during the `/march
 - [x] 7. **Dual Routing**: `/:identifier` resolves as UUID or username. `/` prefers stored username.
 - [x] 8. **Firestore Rules for Usernames**: Read/create/delete for authenticated. Ownership enforcement deferred to UID migration (Phase 4).
 
+## Mission: Phase 6 — Challenge Revamp (B1 + B3)
+
+> Full spec: [2026-03-31-challenge-revamp-design.md](2026-03-31-challenge-revamp-design.md)
+> Implementation plan: [2026-04-01-challenge-revamp-plan.md](2026-04-01-challenge-revamp-plan.md)
+
+### B1: Challenge Catalog + Floor Height
+- [x] 1. Challenge catalog (30 challenges, 7 categories) — `src/utils/challenges.ts`
+- [x] 2. `formatDistance()` utility (auto m/km switch)
+- [x] 3. Floor height presets (2.5/3.0/3.5m) in ProfileTab
+- [x] 4. Migration: `defaultChallenge` → `activeChallenge`
+- [x] 5. `UserSettings` type update + constants.ts cleanup
+- [x] 6. Wire migration into `useAppInitialization`
+
+### B3: Challenge Picker UI
+- [x] 7. StatsTab picker (featured row, category grid, Set Goal)
+- [x] 8. ProfileTab floor height presets (replaced Default Goal)
+- [x] 9. HELP.md update
+
+### Deferred (B2 — Reset Periods)
+- [ ] Reset periods (week/month/quarter/year/lifetime)
+- [ ] Period history archiving
+- [ ] Period selector in picker UI
+
 ### Deferred (Future Phases)
 - [ ] **Shareable Profile URLs**: Update "Copy shareable link" to prefer `/:username` when set.
 - [ ] **Find Your User**: Recovery feature in Profile — search by username or UUID to reconnect to lost account.
 - [ ] **Additional Themes**: Tokyo Midnight, Skyline, Everest, Fuji, Himalayan Dawn, Space Station.
-- [ ] **Challenge Revamp**: Resettable periods, 30 challenges, floor height presets. See `docs/specs/2026-03-31-challenge-revamp-design.md`.
 - [ ] **Analytics Dashboard**: Build a simple unified dashboard view for richer analytics.

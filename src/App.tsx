@@ -18,6 +18,7 @@ import { loadRecords, useThrottledPersistence } from '@utils/storage';
 import { applyTheme, isValidThemeId } from '@utils/themes';
 import type { ThemeId } from '@utils/themes';
 import { useAppInitialization } from '@utils/useAppInitialization';
+import { migrateDefaultChallenge, DEFAULT_FLOOR_HEIGHT, type ActiveChallenge } from '@utils/challenges';
 
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -67,6 +68,10 @@ function MainApp() {
   const { isDevUrl, userId, showWarning, setShowWarning, settings, updateSettings } = useAppInitialization(setRecords, themePreview ? undefined : resolvedUuid ?? undefined);
   const syncStatus = useSyncStatus();
   const [showUsernamePopup, setShowUsernamePopup] = React.useState(false);
+
+  // Derived challenge/floor height from settings
+  const activeChallenge: ActiveChallenge = settings.activeChallenge ?? migrateDefaultChallenge(settings.defaultChallenge);
+  const floorHeight = settings.floorHeight ?? DEFAULT_FLOOR_HEIGHT;
 
   const handleManualSync = async () => {
     if (!resolvedUuid) return;
@@ -179,7 +184,9 @@ function MainApp() {
           <StatsTab
             records={records}
             todayKey={todayKey}
-            defaultChallengeId={settings.defaultChallenge}
+            floorHeight={floorHeight}
+            activeChallenge={activeChallenge}
+            onChallengeChange={(ac: ActiveChallenge) => updateSettings({ activeChallenge: ac })}
             onManualSync={handleManualSync}
           />
         )
@@ -190,10 +197,11 @@ function MainApp() {
 
       {
         activeTab === TABS.PROFILE && (
-          <ProfileTab 
-            userId={userId} 
-            settings={settings} 
-            updateSettings={updateSettings} 
+          <ProfileTab
+            userId={userId}
+            settings={settings}
+            updateSettings={updateSettings}
+            floorHeight={floorHeight}
           />
         )
       }

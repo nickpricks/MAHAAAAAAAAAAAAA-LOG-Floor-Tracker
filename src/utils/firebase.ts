@@ -110,7 +110,13 @@ export const subscribeToUserLogs = (
 export type UserSettings = {
   theme?: ThemeId | 'light' | 'dark' | 'system'; // ThemeId preferred; legacy values migrated on read
   colorMode?: 'light' | 'dark' | 'system';
-  defaultChallenge?: string;
+  defaultChallenge?: string;           // legacy — migrated to activeChallenge on read
+  activeChallenge?: {
+    id: string;
+    resetPeriod: 'week' | 'month' | '3month' | 'year' | 'lifetime';
+    currentPeriodKey: string;
+  };
+  floorHeight?: 2.5 | 3.0 | 3.5;
   email?: string;
   username?: string;
   updatedAt?: number;

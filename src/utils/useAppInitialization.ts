@@ -3,6 +3,7 @@ import { DailyRecord } from '@/types';
 import { isDevModeEnabled } from '@utils/dev';
 import { initializeFirebaseSession, syncAllLocalToCloud, subscribeToUserLogs, subscribeToUserSettings, UserSettings, saveUserSettings } from '@utils/firebase';
 import { mergeCloudIntoLocal } from '@utils/mergeRecords';
+import { migrateDefaultChallenge } from '@utils/challenges';
 import { isValidThemeId } from '@utils/themes';
 import { DEFAULT_THEME_ID } from '@/constants';
 
@@ -77,6 +78,15 @@ export const useAppInitialization = (
           migrated.colorMode = migrated.theme as 'light' | 'dark' | 'system';
           migrated.theme = DEFAULT_THEME_ID;
           saveUserSettings(activeId, { theme: migrated.theme, colorMode: migrated.colorMode });
+        }
+        // Migrate defaultChallenge -> activeChallenge
+        if (!migrated.activeChallenge && migrated.defaultChallenge) {
+          migrated.activeChallenge = migrateDefaultChallenge(migrated.defaultChallenge);
+          delete migrated.defaultChallenge;
+          saveUserSettings(activeId, {
+            activeChallenge: migrated.activeChallenge,
+            defaultChallenge: undefined,
+          });
         }
         setSettings(prev => ({ ...prev, ...migrated }));
       });

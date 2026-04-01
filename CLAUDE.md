@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **Package manager:** bun (not npm/yarn)
 - **Install:** `bun install`
-- **Dev server:** `bun run dev`
+- **Dev server:** `bun run dev` (port 3000) or `make dev port=3005`
 - **Build:** `bun run build` (copies index.html -> 404.html for SPA routing on GitHub Pages)
 - **Type check:** `bun run lint` (runs `tsc --noEmit`)
 - **Run all tests:** `bun run test` (vitest)
@@ -14,6 +14,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Run a single test file:** `bunx vitest run src/utils/__tests__/appHelpers.test.ts`
 - **Verify build:** `bun run verify`
 - **Preview production build:** `bun run preview`
+- **Clean all artifacts:** `make clean`
+
+All `bun run` commands have `make` equivalents (e.g. `make lint`, `make test`, `make build`). `make dev` also supports `host=` for network binding.
 
 ## CI Pipeline
 
@@ -78,7 +81,9 @@ Data paths:
 ### Key Conventions
 
 - **Path aliases:** `@/*` -> `src/*`, `@components/*` -> `src/components/*`, `@utils/*` -> `src/utils/*` — configured in `tsconfig.json` and `vite.config.ts`
+- **Import order:** React first, then external libs, then internal components, then types/constants, then utils/root files **always last**. See `CONTRIBUTING.md`.
 - **Tests:** vitest with `globals: true` — tests live in `src/utils/__tests__/`. Firebase is mocked via `vi.mock`.
+- **Animations:** `motion` (Framer Motion v12) is available for animation. Used in components for transitions.
 - **PWA:** `vite-plugin-pwa` with `registerType: 'prompt'`. `UpdatePrompt` component shows when a new service worker is available.
 - **Dev mode:** Append `?devMode=true` to URL for developer tools (dummy data, reset, 1000-day benchmark, raw JSON).
 - **Tabs:** tracker / stats / help / profile — defined in `src/constants.ts` as `TABS`.
@@ -104,3 +109,5 @@ Data paths:
 - **Fonts in index.html:** Google Fonts are loaded via `<link>` in `index.html`, not CSS `@import`. Adding a font means editing that file.
 - **Settings migration:** `useAppInitialization.ts` migrates legacy Firestore settings on read (e.g., old `theme: 'dark'` -> `theme: ThemeId` + `colorMode`). New schema changes should follow this pattern.
 - **Discriminated unions:** `validateUsername()` returns `{ valid: true } | { valid: false; error: string }`. Narrow with `if (!result.valid)` before accessing `.error`.
+- **Dual path alias config:** `vitest.config.ts` and `tsconfig.json` both define `@/`, `@components/`, `@utils/` aliases independently. Adding a new alias requires updating both files (`vite.config.ts` uses `vite-tsconfig-paths` to read from `tsconfig.json`, but vitest does not).
+- **E2e tests need port 3005:** Theme e2e tests default to `http://localhost:3005`. Start the dev server with `make dev port=3005` in a separate terminal before running `bun run test:themes`.

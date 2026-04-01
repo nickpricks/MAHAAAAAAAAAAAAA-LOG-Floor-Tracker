@@ -29,16 +29,24 @@ Your data is tied to a unique URL. Optionally, claim a username (e.g. `climber-7
 
 ## Challenges
 
-Track your cumulative climb against real landmarks:
+Track your cumulative climb against 30 real-world landmarks, mountains, and destinations:
 
-- **Eiffel Tower** — 330 m
-- **Burj Khalifa** — 828 m
-- **Mount Fuji** — 3,776 m
-- **Mount Kilimanjaro** — 5,895 m
-- **Mount Everest** — 8,848 m
-- **Mariana Trench** — 10,984 m
+- **Landmarks** — Arc de Triomphe, Statue of Liberty, Eiffel Tower, and more
+- **Towers** — Empire State Building, Taipei 101, CN Tower, Burj Khalifa
+- **Mountains** — Half Dome, Mount Fuji, Mont Blanc, Kilimanjaro, Everest, Mariana Trench
+- **Milestones** — Double Everest, Marathon distance, 100 km Club
+- **Journeys** — English Channel, Sahara Crossing, Pacific Crest Trail, Amazon River
+- **Space** — Earth to Moon, Earth to Mars
 
-Set your default challenge in the **Profile** tab.
+Tap "Change Goal" in the **Stats** tab to browse and pick your challenge.
+
+## Floor Height
+
+Different buildings have different floor heights. Set yours in the **Profile** tab:
+
+- **Residential** — 2.5 m per floor
+- **Standard** — 3.0 m per floor (default)
+- **Commercial** — 3.5 m per floor
 
 ## Offline & PWA
 
