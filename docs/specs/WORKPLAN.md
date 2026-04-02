@@ -140,3 +140,34 @@ This workplan tracks the resolution of liabilities identified during the `/march
 - [ ] **Find Your User**: Recovery feature in Profile — search by username or UUID to reconnect to lost account.
 - [ ] **Additional Themes**: Tokyo Midnight, Skyline, Everest, Fuji, Himalayan Dawn, Space Station.
 - [ ] **Analytics Dashboard**: Build a simple unified dashboard view for richer analytics.
+
+## Mission: Phase 6.5 — Tracker UX Polish
+
+- [x] 1. **Inline Record Editing**: Edit any day's up/down counts directly in the log table (`updateRecordValues()` in `appHelpers.ts`)
+- [x] 2. **Paginated Log**: Load 10 entries at a time with "Load More" button (client-side slicing)
+
+## Mission: Phase 7 — Multi-Activity Tracker (P1)
+
+> Full spec: [2026-04-02-multi-activity-tracker-design.md](2026-04-02-multi-activity-tracker-design.md)
+> Implementation plan: [2026-04-02-multi-activity-tracker-plan.md](2026-04-02-multi-activity-tracker-plan.md)
+> Resume prompt: [2026-04-02-multi-activity-tracker-plan_resume.md](2026-04-02-multi-activity-tracker-plan_resume.md)
+
+### P1: Core Multi-Activity + Auth
+- [ ] 1. Activity type definitions + helpers (TDD)
+- [ ] 2. Constants and UserSettings expansion
+- [ ] 3. Activity Firestore operations
+- [ ] 4. Google Sign-In + anonymous account linking
+- [ ] 5. Firestore rules for activities (UID-enforced)
+- [ ] 6. ProfileTab — activity toggles, stride, sign-in
+- [ ] 7. WalkRunTracker + StepsTracker components
+- [ ] 8. ActivitySwitcher kebab menu
+- [ ] 9. TrackerTab multi-activity wiring
+- [ ] 10. App.tsx activities state + handlers
+- [ ] 11. StatsTab universal distance
+- [ ] 12. Documentation updates
+
+### Deferred (P2-P5)
+- [ ] P2: Firebase Cloud Functions, Health API sync
+- [ ] P3: Email/password + Apple Sign-In
+- [ ] P4: Migration script (logs/ -> activities/)
+- [ ] P5: Analytics dashboard
