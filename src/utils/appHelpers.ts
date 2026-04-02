@@ -40,6 +40,27 @@ export const calculateTapUpdate = (
 };
 
 /**
+ * Updates a specific day's up/down counts to exact values.
+ * Used for inline editing of historical records.
+ */
+export const updateRecordValues = (
+  prev: Record<string, DailyRecord>,
+  dateStr: string,
+  up: number,
+  down: number,
+  userId: string | null
+): Record<string, DailyRecord> => {
+  const newTotal = calculateTotal(up, down);
+  const updatedRecord = { dateStr, up, down, total: newTotal };
+
+  if (userId) {
+    syncRecordToCloud(userId, dateStr, updatedRecord);
+  }
+
+  return { ...prev, [dateStr]: updatedRecord };
+};
+
+/**
  * Returns records sorted by date descending.
  */
 export const sortRecordsDesc = (records: Record<string, DailyRecord>): DailyRecord[] => {

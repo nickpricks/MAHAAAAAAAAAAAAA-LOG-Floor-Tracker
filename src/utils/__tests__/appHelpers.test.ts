@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { calculateTapUpdate, sortRecordsDesc } from '@utils/appHelpers';
+import { calculateTapUpdate, updateRecordValues, sortRecordsDesc } from '@utils/appHelpers';
 
 // Mock firebase sync (fire-and-forget, don't need real Firebase)
 vi.mock('../firebase', () => ({
@@ -34,6 +34,38 @@ describe('calculateTapUpdate', () => {
     expect(result[today].up).toBe(6);
     expect(result[today].down).toBe(3);
     expect(result[today].total).toBe(6 + 3 * 0.5);
+  });
+});
+
+describe('updateRecordValues', () => {
+  it('sets exact up/down values for a date', () => {
+    const existing = {
+      '2026-04-02': { dateStr: '2026-04-02', up: 5, down: 3, total: 6.5 },
+    };
+    const result = updateRecordValues(existing, '2026-04-02', 10, 2, null);
+    expect(result['2026-04-02'].up).toBe(10);
+    expect(result['2026-04-02'].down).toBe(2);
+    expect(result['2026-04-02'].total).toBe(11); // 10 + 2 * 0.5
+  });
+
+  it('creates a new record if date does not exist', () => {
+    const result = updateRecordValues({}, '2026-04-01', 3, 1, null);
+    expect(result['2026-04-01']).toEqual({
+      dateStr: '2026-04-01',
+      up: 3,
+      down: 1,
+      total: 3.5,
+    });
+  });
+
+  it('preserves other dates', () => {
+    const existing = {
+      '2026-04-01': { dateStr: '2026-04-01', up: 1, down: 0, total: 1 },
+      '2026-04-02': { dateStr: '2026-04-02', up: 2, down: 0, total: 2 },
+    };
+    const result = updateRecordValues(existing, '2026-04-02', 5, 0, null);
+    expect(result['2026-04-01'].up).toBe(1);
+    expect(result['2026-04-02'].up).toBe(5);
   });
 });
 

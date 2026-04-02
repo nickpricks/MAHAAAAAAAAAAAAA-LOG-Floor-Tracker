@@ -1,16 +1,19 @@
 import React from 'react';
 import { motion, useAnimationControls } from 'motion/react';
-import { ChevronUp, ChevronDown, ChevronsUp, ChevronsDown, ArrowBigUp, ArrowBigDown, ArrowUp, ArrowDown, Plus, Minus, type LucideIcon } from 'lucide-react';
+import { ChevronUp, ChevronDown, ChevronsUp, ChevronsDown, ArrowBigUp, ArrowBigDown, ArrowUp, ArrowDown, Plus, Minus, Edit3, Check, X as XIcon, type LucideIcon } from 'lucide-react';
 import type { ThemeId } from '@utils/themes';
 import { DailyRecord } from '@/types';
 import { getDayName, getFormattedDate } from '@utils/date';
 import { TRACKER_UI } from '@/constants';
 import { useActiveThemeId } from '@utils/themes';
 
+const PAGE_SIZE = 10;
+
 type Props = {
   todayTotal: number;
   handleTap: (type: 'up' | 'down') => void;
   sortedRecords: DailyRecord[];
+  onUpdateRecord: (dateStr: string, up: number, down: number) => void;
 };
 
 type TrackerVariantProps = {
@@ -157,11 +160,38 @@ function ElevatorTracker({ todayTotal, handleTap, counterControls, upControls, d
   );
 }
 
-export default function TrackerTab({ todayTotal, handleTap, sortedRecords }: Props) {
+export default function TrackerTab({ todayTotal, handleTap, sortedRecords, onUpdateRecord }: Props) {
   const counterControls = useAnimationControls();
   const upControls = useAnimationControls();
   const downControls = useAnimationControls();
   const themeId = useActiveThemeId();
+
+  // Pagination
+  const [visibleCount, setVisibleCount] = React.useState(PAGE_SIZE);
+  const visibleRecords = sortedRecords.slice(0, visibleCount);
+  const hasMore = visibleCount < sortedRecords.length;
+
+  // Inline editing
+  const [editingDate, setEditingDate] = React.useState<string | null>(null);
+  const [editUp, setEditUp] = React.useState(0);
+  const [editDown, setEditDown] = React.useState(0);
+
+  const startEdit = (record: DailyRecord) => {
+    setEditingDate(record.dateStr);
+    setEditUp(record.up);
+    setEditDown(record.down);
+  };
+
+  const saveEdit = () => {
+    if (editingDate) {
+      onUpdateRecord(editingDate, editUp, editDown);
+      setEditingDate(null);
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditingDate(null);
+  };
 
   const { MIN_FONT_REM, MAX_FONT_REM, MAX_SCALE_FLOORS } = TRACKER_UI;
   const fontSize = `${MIN_FONT_REM + (MAX_FONT_REM - MIN_FONT_REM) * (Math.min(todayTotal, MAX_SCALE_FLOORS) / MAX_SCALE_FLOORS)}rem`;
@@ -182,24 +212,93 @@ export default function TrackerTab({ todayTotal, handleTap, sortedRecords }: Pro
             <div className="p-6 text-center text-fg-subtle text-sm font-mono">No entries yet.</div>
           )}
           {sortedRecords.length !== 0 && (
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-surface-raised border-b border-line text-[10px] uppercase tracking-wider text-fg-muted">
-                  <th className="p-4 font-semibold font-display">Day</th>
-                  <th className="p-4 font-semibold font-display">Date</th>
-                  <th className="p-4 font-semibold font-display text-right">Floors</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-line-subtle">
-                {sortedRecords.map((record) => (
-                  <tr key={record.dateStr} className="hover:bg-surface-hover transition-colors">
-                    <td className="p-4 text-sm font-medium text-fg">{getDayName(record.dateStr)}</td>
-                    <td className="p-4 text-sm text-fg-muted font-mono">{getFormattedDate(record.dateStr)}</td>
-                    <td className="p-4 text-base font-bold text-accent text-right font-mono tabular-nums">{record.total}</td>
+            <>
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-surface-raised border-b border-line text-[10px] uppercase tracking-wider text-fg-muted">
+                    <th className="p-4 font-semibold font-display">Day</th>
+                    <th className="p-4 font-semibold font-display">Date</th>
+                    <th className="p-4 font-semibold font-display text-right">Floors</th>
+                    <th className="p-4 w-10" />
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-line-subtle">
+                  {visibleRecords.map((record) => (
+                    editingDate === record.dateStr ? (
+                      <tr key={record.dateStr} className="bg-surface-hover">
+                        <td colSpan={4} className="p-3">
+                          <div className="flex flex-col gap-2">
+                            <div className="flex items-center gap-3 text-sm">
+                              <span className="text-fg-muted font-medium">{getDayName(record.dateStr)}</span>
+                              <span className="text-fg-subtle font-mono text-xs">{getFormattedDate(record.dateStr)}</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <label className="flex items-center gap-1.5 text-xs text-fg-muted font-bold">
+                                <ChevronUp size={14} />
+                                <input
+                                  type="number"
+                                  value={editUp}
+                                  onChange={(e) => setEditUp(Math.max(0, parseInt(e.target.value) || 0))}
+                                  min="0"
+                                  className="w-16 bg-surface border border-line text-fg text-sm font-mono rounded-lg p-1.5 text-center focus:ring-accent focus:border-accent"
+                                  autoFocus
+                                />
+                              </label>
+                              <label className="flex items-center gap-1.5 text-xs text-fg-muted font-bold">
+                                <ChevronDown size={14} />
+                                <input
+                                  type="number"
+                                  value={editDown}
+                                  onChange={(e) => setEditDown(Math.max(0, parseInt(e.target.value) || 0))}
+                                  min="0"
+                                  className="w-16 bg-surface border border-line text-fg text-sm font-mono rounded-lg p-1.5 text-center focus:ring-accent focus:border-accent"
+                                />
+                              </label>
+                              <div className="ml-auto flex gap-1.5">
+                                <button
+                                  onClick={saveEdit}
+                                  className="p-1.5 rounded-lg bg-accent text-white hover:opacity-90 transition-opacity"
+                                >
+                                  <Check size={14} />
+                                </button>
+                                <button
+                                  onClick={cancelEdit}
+                                  className="p-1.5 rounded-lg bg-surface border border-line text-fg-muted hover:text-fg transition-colors"
+                                >
+                                  <XIcon size={14} />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : (
+                      <tr key={record.dateStr} className="hover:bg-surface-hover transition-colors group">
+                        <td className="p-4 text-sm font-medium text-fg">{getDayName(record.dateStr)}</td>
+                        <td className="p-4 text-sm text-fg-muted font-mono">{getFormattedDate(record.dateStr)}</td>
+                        <td className="p-4 text-base font-bold text-accent text-right font-mono tabular-nums">{record.total}</td>
+                        <td className="p-4">
+                          <button
+                            onClick={() => startEdit(record)}
+                            className="opacity-0 group-hover:opacity-100 text-fg-subtle hover:text-accent transition-all"
+                          >
+                            <Edit3 size={14} />
+                          </button>
+                        </td>
+                      </tr>
+                    )
+                  ))}
+                </tbody>
+              </table>
+              {hasMore && (
+                <button
+                  onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
+                  className="w-full py-3 text-sm font-bold text-accent hover:bg-surface-hover transition-colors border-t border-line"
+                >
+                  Load More ({sortedRecords.length - visibleCount} remaining)
+                </button>
+              )}
+            </>
           )}
         </div>
       </div>

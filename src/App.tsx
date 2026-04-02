@@ -10,7 +10,7 @@ import UpdatePrompt from '@components/UpdatePrompt';
 import UsernamePopup from '@components/UsernamePopup';
 import { BENCHMARK_UUID, DEFAULT_THEME_ID, TABS, TabType } from '@/constants';
 import { DailyRecord } from '@/types';
-import { calculateTapUpdate, sortRecordsDesc } from '@utils/appHelpers';
+import { calculateTapUpdate, updateRecordValues, sortRecordsDesc } from '@utils/appHelpers';
 import { getTodayKey } from '@utils/date';
 import { confirmResetData, generateDummyData } from '@utils/dev';
 import { lookupUsername, syncAllLocalToCloud, useSyncStatus } from '@utils/firebase';
@@ -103,6 +103,10 @@ function MainApp() {
     setRecords((prev) => calculateTapUpdate(prev, type, userId));
   };
 
+  const handleUpdateRecord = (dateStr: string, up: number, down: number) => {
+    setRecords((prev) => updateRecordValues(prev, dateStr, up, down, userId));
+  };
+
   const [todayKey, setTodayKey] = React.useState(getTodayKey);
 
   React.useEffect(() => {
@@ -175,6 +179,7 @@ function MainApp() {
             todayTotal={todayTotal}
             handleTap={handleTap}
             sortedRecords={sortedRecords}
+            onUpdateRecord={handleUpdateRecord}
           />
         )
       }
