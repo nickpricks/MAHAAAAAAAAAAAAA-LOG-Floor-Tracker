@@ -61,6 +61,10 @@ Data flows through three layers:
 
 `calculateTotal(up, down)` in `appHelpers.ts` is the single source of truth: `up + down * 0.5`. Imported by `mergeRecords.ts` and `dev.ts`.
 
+### Tracker Log
+
+TrackerTab's log table supports inline editing (tap edit icon, change up/down, save) via `updateRecordValues()` in `appHelpers.ts`. Paginated with "Load More" button (10 entries per page, client-side slicing).
+
 ### Routing
 
 `react-router-dom` with dual routing via `/:identifier`. The identifier resolves as either:
@@ -102,6 +106,10 @@ Data paths:
 | `docs/specs/2026-03-30-identity-theming-design.md` | Phase 5 identity/theming design spec |
 | `docs/specs/2026-03-31-challenge-revamp-design.md` | Challenge system revamp design spec |
 | `docs/specs/2026-03-31-identity-theming.md` | Phase 5 implementation plan |
+| `docs/specs/2026-04-01-challenge-revamp-plan.md` | Challenge revamp (B1+B3) implementation plan |
+| `docs/specs/2026-04-02-multi-activity-tracker-design.md` | Multi-activity tracker design spec |
+| `docs/specs/2026-04-02-multi-activity-tracker-plan.md` | Multi-activity tracker P1 implementation plan |
+| `docs/specs/2026-04-02-multi-activity-tracker-plan_resume.md` | Resumable prompt for multi-activity implementation |
 
 ## Gotchas
 
