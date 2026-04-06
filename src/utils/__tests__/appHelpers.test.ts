@@ -25,6 +25,34 @@ describe('calculateTapUpdate', () => {
     expect(record.total).toBe(0.5);
   });
 
+  it('targets a specific date when targetDate is provided', () => {
+    const result = calculateTapUpdate({}, 'up', null, '2026-03-20');
+    expect(result['2026-03-20']).toBeDefined();
+    expect(result['2026-03-20'].up).toBe(1);
+    expect(result['2026-03-20'].down).toBe(0);
+    expect(result['2026-03-20'].total).toBe(1);
+    expect(result['2026-03-20'].dateStr).toBe('2026-03-20');
+  });
+
+  it('increments existing record for a past date', () => {
+    const existing = {
+      '2026-03-20': { dateStr: '2026-03-20', up: 3, down: 2, total: 4 },
+    };
+    const result = calculateTapUpdate(existing, 'down', null, '2026-03-20');
+    expect(result['2026-03-20'].up).toBe(3);
+    expect(result['2026-03-20'].down).toBe(3);
+    expect(result['2026-03-20'].total).toBe(3 + 3 * 0.5);
+  });
+
+  it('defaults to today when targetDate is undefined', () => {
+    const result = calculateTapUpdate({}, 'up', null);
+    const keys = Object.keys(result);
+    expect(keys).toHaveLength(1);
+    const todayKey = keys[0];
+    expect(todayKey).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(result[todayKey].up).toBe(1);
+  });
+
   it('accumulates on existing record', () => {
     const today = Object.keys(calculateTapUpdate({}, 'up', null))[0];
     const existing = {

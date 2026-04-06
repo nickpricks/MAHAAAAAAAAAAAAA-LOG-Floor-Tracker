@@ -37,3 +37,13 @@ export const getFormattedDate = (dateStr: string): string => {
   const [y, m, d] = dateStr.split('-');
   return `${d}/${m}/${y}`;
 };
+
+/**
+ * Formats a YYYY-MM-DD string as a short display like "Wed, Apr 2".
+ * Used for the edit mode header in TrackerTab.
+ */
+export const getShortDate = (dateStr: string): string => {
+  const [y, m, d] = dateStr.split('-');
+  const date = new Date(parseInt(y, 10), parseInt(m, 10) - 1, parseInt(d, 10));
+  return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+};
