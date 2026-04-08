@@ -20,7 +20,9 @@ All `bun run` commands have `make` equivalents (e.g. `make lint`, `make test`, `
 
 ## CI Pipeline
 
-GitHub Actions (`.github/workflows/deploy.yml`): lint -> test -> build -> deploy to GitHub Pages on push to `main`. Uses `bun install --frozen-lockfile`. Vite `base` is set to `/MAHAAAAAAAAAAAAA-LOG-Floor-Tracker/` in production for correct asset paths.
+Two GitHub Actions workflows on push to `main`:
+- **Pages deploy** (`.github/workflows/deploy.yml`): lint -> test -> build -> deploy to GitHub Pages. Uses `bun install --frozen-lockfile`. Vite `base` is `/MAHAAAAAAAAAAAAA-LOG-Floor-Tracker/` in production.
+- **Firestore rules** (`.github/workflows/firebase-rules.yml`): deploys `firestore.rules` via Firebase CLI. Idempotent — no-ops when unchanged. Requires `FIREBASE_SERVICE_ACCOUNT` repo secret.
 
 ## Architecture
 
@@ -89,6 +91,7 @@ Data paths:
 - **Tests:** vitest with `globals: true` — tests live in `src/utils/__tests__/`. Firebase is mocked via `vi.mock`.
 - **Animations:** `motion` (Framer Motion v12) is available for animation. Used in components for transitions.
 - **PWA:** `vite-plugin-pwa` with `registerType: 'prompt'`. `UpdatePrompt` component shows when a new service worker is available.
+- **Loading screen:** `LoadingScreen.tsx` — themed stick figure climbing a staircase (inline SVG + CSS keyframes). Two-frame walk cycle, step flash trails, staggered text reveal. Shown during route resolution. Theme-aware via `var(--accent)` / `var(--text-subtle)`. Animations defined in `src/index.css` under "Loading Screen Animation".
 - **Dev mode:** Append `?devMode=true` to URL for developer tools (dummy data, reset, 1000-day benchmark, raw JSON).
 - **Tabs:** tracker / stats / help / profile — defined in `src/constants.ts` as `TABS`.
 - **Theme-aware components:** Use semantic token classes, not hardcoded zinc/amber. TrackerTab has per-theme variants (`DefaultTracker` / `ElevatorTracker`) selected via `useActiveThemeId()`. Per-theme icons defined in `THEME_ICONS` map.
@@ -110,6 +113,8 @@ Data paths:
 | `docs/specs/2026-04-02-multi-activity-tracker-design.md` | Multi-activity tracker design spec |
 | `docs/specs/2026-04-02-multi-activity-tracker-plan.md` | Multi-activity tracker P1 implementation plan |
 | `docs/specs/2026-04-02-multi-activity-tracker-plan_resume.md` | Resumable prompt for multi-activity implementation |
+| `docs/specs/2026-04-06-edit-past-days-design.md` | Edit past days design spec |
+| `docs/specs/2026-04-06-edit-past-days-plan.md` | Edit past days implementation plan |
 
 ## Gotchas
 

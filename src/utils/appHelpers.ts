@@ -13,16 +13,17 @@ export const calculateTotal = (up: number, down: number): number => up + down * 
 export const calculateTapUpdate = (
   prev: Record<string, DailyRecord>,
   type: 'up' | 'down',
-  userId: string | null
+  userId: string | null,
+  targetDate?: string
 ): Record<string, DailyRecord> => {
-  const today = getTodayKey();
-  const todayRecord = prev[today] || { dateStr: today, up: 0, down: 0, total: 0 };
-  const newUp = type === 'up' ? todayRecord.up + 1 : todayRecord.up;
-  const newDown = type === 'down' ? todayRecord.down + 1 : todayRecord.down;
+  const dateKey = targetDate ?? getTodayKey();
+  const existing = prev[dateKey] || { dateStr: dateKey, up: 0, down: 0, total: 0 };
+  const newUp = type === 'up' ? existing.up + 1 : existing.up;
+  const newDown = type === 'down' ? existing.down + 1 : existing.down;
   const newTotal = calculateTotal(newUp, newDown);
 
   const updatedRecord = {
-    ...todayRecord,
+    ...existing,
     up: newUp,
     down: newDown,
     total: newTotal
@@ -30,12 +31,12 @@ export const calculateTapUpdate = (
 
   // Fire and forget sync to cloud
   if (userId) {
-    syncRecordToCloud(userId, today, updatedRecord);
+    syncRecordToCloud(userId, dateKey, updatedRecord);
   }
 
   return {
     ...prev,
-    [today]: updatedRecord
+    [dateKey]: updatedRecord
   };
 };
 

@@ -1,6 +1,8 @@
 import React from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import { Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import HelpTab from '@components/HelpTab';
+import LoadingScreen from '@components/LoadingScreen';
 import NavigationTabs from '@components/NavigationTabs';
 import OnboardingWarning from '@components/OnboardingWarning';
 import ProfileTab from '@components/ProfileTab';
@@ -10,10 +12,11 @@ import UpdatePrompt from '@components/UpdatePrompt';
 import UsernamePopup from '@components/UsernamePopup';
 import { BENCHMARK_UUID, DEFAULT_THEME_ID, TABS, TabType } from '@/constants';
 import { DailyRecord } from '@/types';
-import { calculateTapUpdate, updateRecordValues, sortRecordsDesc } from '@utils/appHelpers';
+import { calculateTapUpdate, sortRecordsDesc } from '@utils/appHelpers';
 import { getTodayKey } from '@utils/date';
 import { confirmResetData, generateDummyData } from '@utils/dev';
-import { lookupUsername, syncAllLocalToCloud, useSyncStatus } from '@utils/firebase';
+import { getShortDate } from '@utils/date';
+import { deleteRecordFromCloud, lookupUsername, syncAllLocalToCloud, syncRecordToCloud, useSyncStatus } from '@utils/firebase';
 import { loadRecords, useThrottledPersistence } from '@utils/storage';
 import { applyTheme, isValidThemeId } from '@utils/themes';
 import type { ThemeId } from '@utils/themes';
@@ -32,6 +35,12 @@ function MainApp() {
   const [activeTab, setActiveTab] = React.useState<TabType>(TABS.TRACKER);
   const [records, setRecords] = React.useState<Record<string, DailyRecord>>(loadRecords);
   const [devMode, setDevMode] = React.useState(false);
+  const [editingDate, setEditingDate] = React.useState<string | null>(null);
+  const [pendingDelete, setPendingDelete] = React.useState<{
+    dateKey: string;
+    record: DailyRecord;
+    timeoutId: number;
+  } | null>(null);
 
   React.useEffect(() => {
     if (!identifier) return;
@@ -99,14 +108,6 @@ function MainApp() {
     }
   };
 
-  const handleTap = (type: 'up' | 'down') => {
-    setRecords((prev) => calculateTapUpdate(prev, type, userId));
-  };
-
-  const handleUpdateRecord = (dateStr: string, up: number, down: number) => {
-    setRecords((prev) => updateRecordValues(prev, dateStr, up, down, userId));
-  };
-
   const [todayKey, setTodayKey] = React.useState(getTodayKey);
 
   React.useEffect(() => {
@@ -118,7 +119,90 @@ function MainApp() {
     }, 60_000);
     return () => clearInterval(interval);
   }, [todayKey]);
-  const todayTotal = records[todayKey]?.total || 0;
+
+  const commitPendingDelete = React.useCallback((pd: { dateKey: string; record: DailyRecord; timeoutId: number }) => {
+    clearTimeout(pd.timeoutId);
+    if (userId) {
+      deleteRecordFromCloud(userId, pd.dateKey);
+    }
+    setPendingDelete(null);
+  }, [userId]);
+
+  const handleTap = (type: 'up' | 'down') => {
+    setRecords((prev) => calculateTapUpdate(prev, type, userId, editingDate ?? undefined));
+  };
+
+  const handleSelectDate = (dateStr: string | null) => {
+    setEditingDate(dateStr);
+    if (dateStr && !records[dateStr]) {
+      setRecords((prev) => ({
+        ...prev,
+        [dateStr]: { dateStr, up: 0, down: 0, total: 0 },
+      }));
+    }
+  };
+
+  const handleDelete = () => {
+    if (!editingDate) return;
+    const dateKey = editingDate;
+    const record = records[dateKey];
+    if (!record) return;
+
+    if (pendingDelete) {
+      commitPendingDelete(pendingDelete);
+    }
+
+    const isToday = dateKey === todayKey;
+
+    if (isToday) {
+      // Reset today to zero instead of removing
+      const zeroRecord = { dateStr: dateKey, up: 0, down: 0, total: 0 };
+      setRecords((prev) => ({ ...prev, [dateKey]: zeroRecord }));
+    } else {
+      // Remove past day entirely
+      setRecords((prev) => {
+        const next = { ...prev };
+        delete next[dateKey];
+        return next;
+      });
+    }
+
+    setEditingDate(null);
+
+    const timeoutId = window.setTimeout(() => {
+      if (userId) {
+        if (isToday) {
+          // Sync the zeroed record to cloud
+          syncRecordToCloud(userId, dateKey, { dateStr: dateKey, up: 0, down: 0, total: 0 });
+        } else {
+          deleteRecordFromCloud(userId, dateKey);
+        }
+      }
+      setPendingDelete(null);
+    }, 10_000);
+
+    setPendingDelete({ dateKey, record, timeoutId });
+  };
+
+  const handleUndo = () => {
+    if (!pendingDelete) return;
+    clearTimeout(pendingDelete.timeoutId);
+    setRecords((prev) => ({
+      ...prev,
+      [pendingDelete.dateKey]: pendingDelete.record,
+    }));
+    setPendingDelete(null);
+  };
+
+  React.useEffect(() => {
+    if (activeTab !== TABS.TRACKER && pendingDelete) {
+      commitPendingDelete(pendingDelete);
+    }
+  }, [activeTab, pendingDelete, commitPendingDelete]);
+
+  const displayTotal = editingDate
+    ? (records[editingDate]?.total || 0)
+    : (records[todayKey]?.total || 0);
   const sortedRecords = sortRecordsDesc(records);
 
   // Theme monitoring
@@ -144,11 +228,7 @@ function MainApp() {
   }, [showWarning, userId, settings.username]);
 
   if (resolving) {
-    return (
-      <div className="min-h-screen bg-surface bg-topo flex items-center justify-center text-fg-muted">
-        <div className="font-mono text-sm animate-pulse">Loading...</div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (
@@ -156,7 +236,7 @@ function MainApp() {
       {/* Ambient effects layer (bubbles, embers, scanlines — theme-dependent) */}
       <div className="fx-ambient" />
       {/* Navigation Tabs */}
-      <NavigationTabs activeTab={activeTab} setActiveTab={setActiveTab} syncStatus={syncStatus} />
+      <NavigationTabs activeTab={activeTab} setActiveTab={(tab) => { setEditingDate(null); setActiveTab(tab); }} syncStatus={syncStatus} />
       <OnboardingWarning showWarning={showWarning} setShowWarning={setShowWarning} />
       <UpdatePrompt />
 
@@ -176,10 +256,12 @@ function MainApp() {
       {
         activeTab === TABS.TRACKER && (
           <TrackerTab
-            todayTotal={todayTotal}
+            displayTotal={displayTotal}
+            editingDate={editingDate}
             handleTap={handleTap}
+            onSelectDate={handleSelectDate}
+            onDelete={handleDelete}
             sortedRecords={sortedRecords}
-            onUpdateRecord={handleUpdateRecord}
           />
         )
       }
@@ -210,6 +292,29 @@ function MainApp() {
           />
         )
       }
+
+      {/* Undo Delete Toast */}
+      <AnimatePresence>
+        {pendingDelete && (
+          <motion.div
+            initial={{ y: 80, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 80, opacity: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-surface-card border border-line rounded-full px-5 py-3 shadow-lg flex items-center gap-3 text-sm"
+          >
+            <span className="text-fg">
+              Deleted <span className="font-semibold">{getShortDate(pendingDelete.dateKey)}</span>
+            </span>
+            <button
+              onClick={handleUndo}
+              className="font-bold text-accent hover:text-accent/80 transition-colors"
+            >
+              Undo
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Dev Mode Toggle (Only visible if ?devMode=true) */}
       {

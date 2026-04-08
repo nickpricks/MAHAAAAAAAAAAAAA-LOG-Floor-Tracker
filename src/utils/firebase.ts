@@ -57,6 +57,22 @@ export const syncRecordToCloud = async (userId: string, dateKey: string, record:
   }
 }
 
+/**
+ * Fire-and-forget deletion of a single day's record from the cloud database.
+ */
+export const deleteRecordFromCloud = async (userId: string, dateKey: string) => {
+  if (!userId) return;
+  setSyncStatus('syncing');
+  try {
+    const recordRef = doc(db, `users/${userId}/logs`, dateKey);
+    await deleteDoc(recordRef);
+    setSyncStatus('synced');
+  } catch (error) {
+    console.error("Firebase Delete Error:", error);
+    setSyncStatus('error');
+  }
+};
+
 const FIRESTORE_BATCH_LIMIT = 499;
 
 /**
