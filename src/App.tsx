@@ -2,6 +2,7 @@ import React from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Navigate, Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import HelpTab from '@components/HelpTab';
+import LoadingScreen from '@components/LoadingScreen';
 import NavigationTabs from '@components/NavigationTabs';
 import OnboardingWarning from '@components/OnboardingWarning';
 import ProfileTab from '@components/ProfileTab';
@@ -227,11 +228,7 @@ function MainApp() {
   }, [showWarning, userId, settings.username]);
 
   if (resolving) {
-    return (
-      <div className="min-h-screen bg-surface bg-topo flex items-center justify-center text-fg-muted">
-        <div className="font-mono text-sm animate-pulse">Loading...</div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (

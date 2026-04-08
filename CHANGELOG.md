@@ -2,6 +2,15 @@
 
 All notable changes to Maha Log Floor Tracker are documented here.
 
+## [0.0.7] — 2026-04-08
+
+### Added
+- **Loading animation** — themed stick figure climbing a staircase, shown during route resolution. Two-frame walk cycle, step flash trails, staircase draw-in, staggered "MAHA LOG" text reveal. Pure CSS + inline SVG, theme-aware via custom properties (`LoadingScreen.tsx`)
+- **Firebase rules CI** — new workflow (`.github/workflows/firebase-rules.yml`) auto-deploys `firestore.rules` on every push to `main`. Idempotent — no-ops when rules unchanged
+
+### Changed
+- Phase 4 workplan updated — Firestore rules deploy checked off, localStorage removal and loading animation scoped as post-migration items
+
 ## [0.0.6] — 2026-04-06
 
 ### Added

@@ -73,6 +73,119 @@
   50% { opacity: 0.8; }
 }
 
+/* ── Loading Screen Animation ────────────────────────────────── */
+
+.loading-stairs {
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: loading-draw 0.8s ease-out forwards;
+}
+
+.loading-step {
+  opacity: 0;
+  animation: loading-step-flash 3s ease infinite;
+}
+
+.loading-climber {
+  will-change: transform;
+  animation: loading-climb 3s ease infinite;
+}
+
+.loading-glow {
+  animation: loading-glow-pulse 2s ease-in-out infinite;
+}
+
+.loading-frame-a {
+  animation: loading-frame-a 0.6s step-end infinite;
+}
+
+.loading-frame-b {
+  animation: loading-frame-b 0.6s step-end infinite;
+}
+
+.loading-letter {
+  display: inline-block;
+  opacity: 0;
+  animation: loading-letter-in 0.4s ease forwards;
+}
+
+@keyframes loading-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes loading-step-flash {
+  0% { opacity: 0; }
+  4% { opacity: 0.9; }
+  20% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* Feet-on-step positions: figure origin is at feet, drawn upward */
+@keyframes loading-climb {
+  0%, 8% {
+    transform: translate(22px, 98px);
+    opacity: 1;
+  }
+  11% {
+    transform: translate(34px, 69px);
+  }
+  14%, 26% {
+    transform: translate(46px, 81px);
+  }
+  29% {
+    transform: translate(58px, 52px);
+  }
+  32%, 44% {
+    transform: translate(70px, 64px);
+  }
+  47% {
+    transform: translate(82px, 35px);
+  }
+  50%, 62% {
+    transform: translate(94px, 47px);
+  }
+  65% {
+    transform: translate(106px, 18px);
+  }
+  68%, 86% {
+    transform: translate(118px, 30px);
+    opacity: 1;
+  }
+  92% {
+    transform: translate(118px, 30px);
+    opacity: 0;
+  }
+  93% {
+    transform: translate(22px, 98px);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(22px, 98px);
+    opacity: 1;
+  }
+}
+
+/* Two-frame walk cycle: stride (A) and gather (B) alternate every 0.3s */
+@keyframes loading-frame-a {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes loading-frame-b {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+@keyframes loading-glow-pulse {
+  0%, 100% { opacity: 0.08; }
+  50% { opacity: 0.25; }
+}
+
+@keyframes loading-letter-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* ── Theme-Aware Utility Classes ──────────────────────────────── */
 
 .font-display { font-family: var(--font-theme-display); }

@@ -89,8 +89,12 @@ This workplan tracks the resolution of liabilities identified during the `/march
 ## Mission: Phase 4 - Security - Priority 2
 
 ### Security
-- [ ] 1. **Deploy Firestore Rules**: Run `firebase deploy --only firestore:rules` (rules are version-controlled in `firestore.rules` but never deployed)
+- [x] 1. **Deploy Firestore Rules**: CI workflow (`.github/workflows/firebase-rules.yml`) deploys on every push to main. `FIREBASE_SERVICE_ACCOUNT` secret configured.
 - [ ] 2. **Firebase UID Migration (F1)**: Switch Firestore doc paths from URL UUID to `request.auth.uid`, enforce `request.auth.uid == userId` in rules. Requires data migration for existing users.
+
+### Post-Migration Cleanup
+- [ ] 3. **Remove localStorage Dependency**: Drop `useThrottledPersistence`, UUID storage, and settings caching — Firestore `persistentLocalCache` (already enabled) replaces all three layers.
+- [ ] 4. **Loading Animation**: Themed animated SVG (figure climbing steps or similar) for the cold-start gap while Firestore cache hydrates. Should be inline SVG using CSS custom property tokens, theme-aware, and reusable as PWA splash.
 
 ## Mission: Phase 5 - Identity & Theming - Priority 1
 

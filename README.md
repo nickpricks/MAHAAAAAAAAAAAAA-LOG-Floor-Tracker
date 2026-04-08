@@ -1,6 +1,6 @@
 # Floor Tracker
 
-**v0.0.5** · [Live App](https://nickpricks.github.io/MAHAAAAAAAAAAAAA-LOG-Floor-Tracker/)
+**v0.0.7** · [Live App](https://nickpricks.github.io/MAHAAAAAAAAAAAAA-LOG-Floor-Tracker/)
 
 A minimalist web app for tracking floors climbed. Tap up, watch the number grow, sync across devices.
 
@@ -20,6 +20,7 @@ A minimalist web app for tracking floors climbed. Tap up, watch the number grow,
 - **Username Identity** — Optional username (e.g. `climber-7f3a`) with dual routing: access your data via `/:username` or `/:uuid`.
 - **PWA & Offline-First** — Installable, works offline, data syncs when reconnected.
 - **Challenge Progress** — Track cumulative floors against real-world landmarks (Eiffel Tower through Mariana Trench).
+- **Edit Past Days** — Tap any log row to redirect +/- buttons to that date. Add missing days via date picker. Delete entries with 10-second undo.
 
 ---
 
@@ -80,9 +81,11 @@ Visit `/{theme-id}` to preview any theme (e.g. `/industrial-furnace`).
 | 2 — Sync & Personalization | Done | Firestore real-time sync, profile tab, theme toggle |
 | 3 — Audit Hardening | Done | Vitest framework, merge logic TDD, batch sync, offline persistence |
 | 3.5 — Post-Hardening + UI | Done | Summit Instrument design system, dark mode fix, mobile nav |
-| 4 — Security | Partial | Firestore rules version-controlled; UID migration pending |
+| 4 — Security | In Progress | Firestore rules auto-deployed via CI; UID migration pending |
 | 5 — Identity & Theming | Done | CSS token theme system, Night City elevator theme, username identity, dual routing |
-| Next | Planned | Shareable profile URLs, account recovery, additional themes |
+| 6 — Challenge Revamp | Done | 30-challenge catalog, category picker, floor height presets |
+| 7 — Edit Past Days | Done | Tappable log rows, past day picker, delete with undo toast |
+| Next | Planned | UID migration, drop localStorage, loading animation, shareable profile URLs |
 
 ---
 
